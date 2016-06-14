@@ -33,29 +33,37 @@ def gen_csr(private_key, subject_name):
     csr = x509.CertificateSigningRequestBuilder().subject_name(subject_name).sign(private_key, hashes.SHA256(), default_backend())
     return(csr)
 
-#def sign_cert(self_signed, private_key, csr):
-   #if self_signed == True:
-      #subject = issuer = x509.Name([
-      #x509.NameAttribute(NameOID.COUNTRY_NAME, u"US"),
-      #x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"CA"),
-      #x509.NameAttribute(NameOID.LOCALITY_NAME, u"San Francisco"),
-      #x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"My Company"),
+def sign_cert(self_signed, private_key, csr):
+   if self_signed == True:
+      subject = issuer = x509.Name([
+      x509.NameAttribute(NameOID.COUNTRY_NAME, u"US"),
+      x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"CA"),
+      x509.NameAttribute(NameOID.LOCALITY_NAME, u"San Francisco"),
+      x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"My Company"),
+      x509.NameAttribute(NameOID.COMMON_NAME, u"mysite.com"),
+      ])
 
-      #x509.NameAttribute(NameOID.COMMON_NAME, u"mysite.com"),
-      #])
-        #cert = x509.CertificateBuilder().subject_name(subject).issuer_name(issuer).public_key(private_key.public_key()).not_valid_before(datetime.datetime.utcnow()).not_valid_after(datetime.datetime.utcnow() + datetime.timedelta(days=10)).add_extension(x509.SubjectAlternativeName([x509.DNSName(u"localhost")]),critical=False, ).sign(private_key, hashes.SHA256(), default_backend())
-   #else:
-      #builder = x509.CertificateBuilder()
-      #builder = builder.subject_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, u'Test Root 1'),]))
-      #builder = builder.issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, u'Passport Development Lab'),]))
-      #builder = builder.not_valid_before(datetime.datetime.today())
-      #builder = builder.not_valid_after(datetime.datetime.today() + one_day)
-      #builder = builder.serial_number(int(uuid.uuid4()))
-      #builder = builder.public_key(public_key)
-      #builder = builder.add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True,)
-      #certificate = builder.sign(private_key=private_key, algorithm=hashes.SHA256(),backend=default_backend())
-        
-    #return(certificate)
+      builder = x509.CertificateBuilder()
+      builder = builder.subject_name(subject)
+      builder = builder.issuer_name(issuer)
+      builder = builder.public_key(private_key.public_key())
+      builder = builder.not_valid_before(datetime.datetime.utcnow())
+      builder = builder.not_valid_after(datetime.datetime.utcnow() + datetime.timedelta(days=10))
+      builder = builder.add_extension(x509.SubjectAlternativeName([x509.DNSName(u"localhost")]),critical=False, )
+      builder = builder.sign(private_key, hashes.SHA256(), default_backend())
+
+   else:
+      builder = x509.CertificateBuilder()
+      builder = builder.subject_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, u'Test Root 1'),]))
+      builder = builder.issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, u'Passport Development Lab'),]))
+      builder = builder.not_valid_before(datetime.datetime.today())
+      builder = builder.not_valid_after(datetime.datetime.today() + one_day)
+      builder = builder.serial_number(int(uuid.uuid4()))
+      builder = builder.public_key(public_key)
+      builder = builder.add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True,)
+      certificate = builder.sign(private_key=private_key, algorithm=hashes.SHA256(),backend=default_backend())
+
+   return certificate
 
 
 def pem_encode_private_key(private_key):
