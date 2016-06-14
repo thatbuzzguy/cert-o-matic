@@ -1,2 +1,2 @@
-set FLASK_APP=passport.py
+set FLASK_APP=inkwell.py
 flask run

@@ -15,16 +15,20 @@ resp = Response(response=certversion, status=200, mimetype="application/json")
 
 
 common_name = build_subject_name(input_subject)
+
 private_key = gen_rsa_private_key(2048)
 public_key = gen_rsa_public_key(private_key)
+
 csr = gen_csr(private_key, common_name)
 rootcert = gen_root_cert(private_key, public_key, csr)
 childcert = gen_child_cert(private_key, public_key, csr, common_name)
+
 with open("root_cert.der", "wb") as f:
     f.write(rootcert.public_bytes(serialization.Encoding.DER))
 with open("child_cert.der", "wb") as f:
     f.write(childcert.public_bytes(serialization.Encoding.DER))
-
-print('test')
+with open("csr.pem", "wb") as f:
+    f.write(csr.public_bytes(serialization.Encoding.PEM))
 
 input_subject = input('Enter the Subject: ')
+print('test')
