@@ -1,2 +1,2 @@
-set FLASK_APP=inkwell.py
+set FLASK_APP=Nib.py
 flask run
