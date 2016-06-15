@@ -13,6 +13,18 @@ resp = Response(response=certversion, status=200, mimetype="application/json")
     return(resp)
 
 
+    #save_configuration(ca_issuer_name, cert_lifetime, hash_name)
+    #load_configuration(ca_issuer_name, cert_lifetime, hash_name)
+
+
+    #with open("client_cert.der", "wb") as f:
+    #   f.write(client_cert.public_bytes(serialization.Encoding.DER))
+
+
+    # print(client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict"))
+    #print(private_key2.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
+    #   encryption_algorithm=serialization.BestAvailableEncryption(b'mypassword')).decode(encoding="utf-8", errors="strict"))
+
 
 common_name = build_subject_name(input_subject)
 

@@ -8,8 +8,10 @@ from cryptography.hazmat.primitives.asymmetric import ec
 import datetime
 import uuid
 from yaml import load, dump
+from flask import Flask, request, jsonify, Response, render_template
 
 appversion = "SEOLH .005"
+backend = default_backend()
 
 def set_hash_name(hash_name):
    if hash_name == 'sha256':
@@ -104,34 +106,83 @@ def load_configuration(ca_issuer_name, cert_lifetime, hash_name):
       print(load(f.read()))
    return
 
-backend = default_backend()
-hash_name = set_hash_name('sha512')
-cert_lifetime = datetime.timedelta(1, 0, 0)
-ca_issuer_name = 'Test Root 1'
 
-serial_number1 = int(uuid.uuid4())
-subject_name1 = set_subject_name(u'Test Root 1')
-private_key1 = set_private_key('secp521r1')
-csr1 = set_csr(private_key1, subject_name1, hash_name)
-root_cert = sign_cert(True, private_key1, csr1, serial_number1, cert_lifetime, ca_issuer_name, hash_name)
-with open("root_cert.der", "wb") as f:
-    f.write(root_cert.public_bytes(serialization.Encoding.DER))
+app = Flask(__name__)
 
-serial_number2 = int(uuid.uuid4())
-subject_name2 = set_subject_name('test')
-private_key2 = set_private_key('secp256r1')
-csr2 = set_csr(private_key2, subject_name2, hash_name)
-client_cert = sign_cert(False, private_key2, csr2, serial_number2, cert_lifetime, ca_issuer_name, hash_name)
-print(client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict"))
-#print(private_key2.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
-#   encryption_algorithm=serialization.BestAvailableEncryption(b'mypassword')).decode(encoding="utf-8", errors="strict"))
-print(private_key2.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
-   encryption_algorithm=serialization.NoEncryption()).decode(encoding="utf-8", errors="strict"))
+@app.route('/version')
+def version():
+    return(appversion)
 
-#with open("client_cert.der", "wb") as f:
-#   f.write(client_cert.public_bytes(serialization.Encoding.DER))
+@app.route('/ca')
+def ca():
 
+   backend = default_backend()
+   hash_name = set_hash_name('sha512')
+   cert_lifetime = datetime.timedelta(1, 0, 0)
+   ca_issuer_name = 'Test Root 1'
+   serial_number1 = int(uuid.uuid4())
+   subject_name1 = set_subject_name(u'Test Root 1')
+   private_key1 = set_private_key('secp521r1')
+   csr1 = set_csr(private_key1, subject_name1, hash_name)
+
+   root_cert = sign_cert(True, private_key1, csr1, serial_number1, cert_lifetime, ca_issuer_name, hash_name)
    
+   with open("root_cert.der", "wb") as f:
+      f.write(root_cert.public_bytes(serialization.Encoding.DER))
 
-#save_configuration(ca_issuer_name, cert_lifetime, hash_name)
-#load_configuration(ca_issuer_name, cert_lifetime, hash_name)
+   with open("csr.pem", "wb") as f:
+      f.write(csr1.public_bytes(serialization.Encoding.PEM))
+      
+   with open("root_private_key.der", "wb") as f:
+      f.write(private_key1.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
+
+   resp = Response(response="ok", status=200, mimetype="application/json")
+   return(resp)
+
+
+@app.route('/broken')
+def broken():
+
+    #save_configuration(ca_issuer_name, cert_lifetime, hash_name)
+    #load_configuration(ca_issuer_name, cert_lifetime, hash_name)
+
+    resp = Response(response=cert_txt, status=200, mimetype="application/json")
+    return(resp)
+
+
+@app.route('/test')
+def test():
+    backend = default_backend()
+    hash_name = set_hash_name('sha512')
+    cert_lifetime = datetime.timedelta(1, 0, 0)
+    ca_issuer_name = 'Test Root 1'
+
+    serial_number2 = int(uuid.uuid4())
+    subject_name2 = set_subject_name('test')
+    private_key2 = set_private_key('secp256r1')
+    csr2 = set_csr(private_key2, subject_name2, hash_name)
+    client_cert = sign_cert(False, private_key2, csr2, serial_number2, cert_lifetime, ca_issuer_name, hash_name)
+
+    cert_txt = client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict") + private_key2.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
+       encryption_algorithm=serialization.NoEncryption()).decode(encoding="utf-8", errors="strict")
+
+
+    resp = Response(response=cert_txt, status=200, mimetype="application/json")
+    return(resp)
+
+@app.route('/csr')
+def csr():
+    return render_template('form_submit.html')
+
+
+@app.route('/certificate', methods=['POST'])
+def certificate():
+    csr=request.form['csr']
+    return render_template('form_action.html', csr=csr)
+
+if __name__ == '__main__':
+  app.run( 
+        host="0.0.0.0",
+        port=int("80")
+  )
+

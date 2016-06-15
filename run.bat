@@ -1,2 +1,3 @@
-set FLASK_APP=chancery.py
+
+set FLASK_APP=seolh.py
 flask run

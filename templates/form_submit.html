@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>CSR Input</title>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div id="container">
+            <div class="title">
+                <h1>CSR Input</h1>
+            </div>
+            <div id="content">
+                <form method="post" action="{{ url_for('certificate') }}">
+                  <label for="yourname">Please enter your CSR:</label>
+                  <input type="text" name="certificate" /><br />
+                  <input type="submit" />
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
+ 
