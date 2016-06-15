@@ -5,12 +5,11 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.primitives import constant_time
 import datetime
 import uuid
 from yaml import load, dump
 
-appversion = "SEOLH .004"
+appversion = "SEOLH .005"
 
 def set_hash_name(hash_name):
    if hash_name == 'sha256':
@@ -27,7 +26,7 @@ def set_hash_name(hash_name):
    return hash_name
 
 
-def gen_private_key(algo_name):
+def set_private_key(algo_name):
    if algo_name == 'secp256r1':
       private_key = ec.generate_private_key(ec.SECP256R1, backend)
    elif algo_name == 'secp384r1':
@@ -43,41 +42,37 @@ def gen_private_key(algo_name):
       private_key = rsa.generate_private_key(65537, 4096, backend)
    return(private_key)
 
-def gen_public_key(private_key):
+def set_public_key(private_key):
     public_key = private_key.public_key()
     return(public_key)
 
-def build_subject_name(common_name):
-    subject_name = x509.Name([
-        x509.NameAttribute(NameOID.COUNTRY_NAME, u"US"),
-        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"CA"),
-        x509.NameAttribute(NameOID.LOCALITY_NAME, u"West Sacramento"),
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"Personal"),
-        x509.NameAttribute(NameOID.COMMON_NAME, common_name),
-        ])
-    return subject_name
+def set_subject_name(common_name):
+   subject_name = x509.Name([
+      x509.NameAttribute(NameOID.COUNTRY_NAME, u"US"),
+      x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"CA"),
+      x509.NameAttribute(NameOID.LOCALITY_NAME, u"West Sacramento"),
+      x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"Personal"),
+      x509.NameAttribute(NameOID.COMMON_NAME, common_name),])
+   return subject_name
 
-def gen_csr(private_key, subject_name):
-    csr = x509.CertificateSigningRequestBuilder().subject_name(subject_name).sign(private_key, hashes.SHA256(), backend)
+def set_csr(private_key, subject_name, hash_name):
+    csr = x509.CertificateSigningRequestBuilder().subject_name(subject_name).sign(private_key, hash_name, backend)
     return(csr)
 
 def sign_cert(self_signed, private_key, csr, serial_number, cert_lifetime, ca_issuer_name, hash_name):
    builder = x509.CertificateBuilder()
-   builder = builder.issuer_name(ca_issuer_name)
+   builder = builder.issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, ca_issuer_name)]))
    builder = builder.not_valid_before(datetime.datetime.utcnow())
    builder = builder.not_valid_after(datetime.datetime.utcnow() + cert_lifetime)
    builder = builder.serial_number(int(uuid.uuid4()))
 
    if self_signed == True:
       builder = builder.public_key(private_key.public_key())
-      build_subject_name(common_name)
-      builder = builder.subject_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, ca_issuer_name),]))
 
    else:
       builder = builder.public_key(csr.public_key())
-      build_subject_name(common_name)
-      builder = builder.subject_name(csr.subject)
 
+   builder = builder.subject_name(csr.subject)
    builder = builder.add_extension(x509.BasicConstraints(ca=self_signed, path_length=None), critical=True,)
    builder = builder.sign(private_key, hash_name, backend)
 
@@ -110,23 +105,33 @@ def load_configuration(ca_issuer_name, cert_lifetime, hash_name):
    return
 
 backend = default_backend()
-subject_name = build_subject_name(u'test')
-private_key1 = gen_private_key('secp256r1')
-private_key2 = gen_private_key('secp256r1')
-csr = gen_csr(private_key2, subject_name)
-serial_number = int(uuid.uuid4())
+hash_name = set_hash_name('sha512')
 cert_lifetime = datetime.timedelta(1, 0, 0)
-ca_issuer_name = u'Test Root 1'
-hash_name = 'sha512'
+ca_issuer_name = 'Test Root 1'
 
-root_cert = sign_cert(True, private_key1, csr, serial_number, cert_lifetime, ca_issuer_name, hash_name)
-client_cert = sign_cert(False, private_key2, csr, serial_number, cert_lifetime, ca_issuer_name, hash_name)
-
+serial_number1 = int(uuid.uuid4())
+subject_name1 = set_subject_name(u'Test Root 1')
+private_key1 = set_private_key('secp521r1')
+csr1 = set_csr(private_key1, subject_name1, hash_name)
+root_cert = sign_cert(True, private_key1, csr1, serial_number1, cert_lifetime, ca_issuer_name, hash_name)
 with open("root_cert.der", "wb") as f:
     f.write(root_cert.public_bytes(serialization.Encoding.DER))
 
-with open("client_cert.der", "wb") as f:
-    f.write(client_cert.public_bytes(serialization.Encoding.DER))
+serial_number2 = int(uuid.uuid4())
+subject_name2 = set_subject_name('test')
+private_key2 = set_private_key('secp256r1')
+csr2 = set_csr(private_key2, subject_name2, hash_name)
+client_cert = sign_cert(False, private_key2, csr2, serial_number2, cert_lifetime, ca_issuer_name, hash_name)
+print(client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict"))
+#print(private_key2.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
+#   encryption_algorithm=serialization.BestAvailableEncryption(b'mypassword')).decode(encoding="utf-8", errors="strict"))
+print(private_key2.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
+   encryption_algorithm=serialization.NoEncryption()).decode(encoding="utf-8", errors="strict"))
+
+#with open("client_cert.der", "wb") as f:
+#   f.write(client_cert.public_bytes(serialization.Encoding.DER))
+
+   
 
 #save_configuration(ca_issuer_name, cert_lifetime, hash_name)
 #load_configuration(ca_issuer_name, cert_lifetime, hash_name)
