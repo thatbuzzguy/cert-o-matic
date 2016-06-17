@@ -1,3 +1,32 @@
+
+      self.app_version
+      self.config_file
+      self.back_end 
+      self.initialized 
+      self.common_name
+      self.subject_alternate_names 
+      self.email_address
+      self.organization
+      self.organizational_unit
+      self.city_or_locality
+      self.state_or_province
+      self.country_name
+      self.signature_algorithm
+      self.signature_hash_algorithm
+      self.certificate_lifetime
+      self.private_key_file_name
+      self.private_key_format
+      self.private_key_password
+      self.root_certificate_file_name
+      self.root_certificate_format
+      self.fqdn
+      self.ip_address
+      self.port_number
+      self.auth_psk
+      self.config_file
+      self.database
+
+
 from flask import Flask, request, jsonify, Response
 
 app = Flask(__name__)
