@@ -1,4 +1,12 @@
-- {certificate_lifetime: '1', certificate_version: V3, city_or_locality: West Sacramento,
-  common_name: Test Root 1, country_name: US, email_address: test@local, organization: Home,
-  organizational_unit: Test, signature_algorithm: SHA-256, signature_hash_algorithm: SHA256,
-  state_or_province: CA, thumbprint_algorithm: SHA1}
+certificate_lifetime: 1
+certificate_version: V3
+city_or_locality: West Sacramento
+common_name: Test Root 1
+country_name: US
+email_address: test@local
+organization: Home
+organizational_unit: Test
+signature_algorithm: SHA-256
+signature_hash_algorithm: SHA256
+state_or_province: CA
+thumbprint_algorithm: SHA1

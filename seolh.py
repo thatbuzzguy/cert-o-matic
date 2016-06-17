@@ -22,11 +22,7 @@ def set_hash_name(hash_name):
       hash_name = hashes.SHA512()
    elif algo_name == 'whirlpool':
       hash_name = hashes.Whirlpool()
-   else:
-      print('cannot find hash')
-      hash_name = hashes.SHA512()
    return hash_name
-
 
 def set_private_key(algo_name):
    if algo_name == 'secp256r1':
@@ -38,9 +34,6 @@ def set_private_key(algo_name):
    elif algo_name == 'rsa2048':
       private_key = rsa.generate_private_key(65537, 2048, backend)
    elif algo_name == 'rsa4096':
-      private_key = rsa.generate_private_key(65537, 4096, backend)
-   else:
-      print('cannot find algo')
       private_key = rsa.generate_private_key(65537, 4096, backend)
    return(private_key)
 
@@ -80,7 +73,6 @@ def sign_cert(self_signed, private_key, csr, serial_number, cert_lifetime, ca_is
 
    return builder
 
-
 def pem_encode_private_key(private_key):
     pem = private_key.private_bytes(encoding=serialization.Encoding.PEM,format=serialization.PrivateFormat.TraditionalOpenSSL,encryption_algorithm=serialization.NoEncryption())
     text = pem.decode('ascii')
@@ -95,17 +87,30 @@ def pem_encode_csr(csr):
     pem = csr.public_bytes(encoding=serialization.Encoding.PEM)
     return(pem)
 
-def save_configuration(ca_issuer_name, cert_lifetime, hash_name):
+def save_configuration(certificate_version, common_name, email_address, organization, organizational_unit, city_or_locality, state_or_province, country_name, signature_algorithm, signature_hash_algorithm, \
+                       certificate_lifetime, thumbprint_algorithm):
+   data = {
+      'certificate_version' : certificate_version,
+      'common_name' : common_name,
+      'email_address' : email_address,
+      'organization' : organization,
+      'organizational_unit' : organizational_unit,
+      'city_or_locality' : city_or_locality,
+      'state_or_province' : state_or_province,
+      'country_name' : country_name,
+      'signature_algorithm' : signature_algorithm,
+      'signature_hash_algorithm' : signature_hash_algorithm,
+      'certificate_lifetime' : certificate_lifetime,
+      'thumbprint_algorithm' : thumbprint_algorithm}
+
    with open("seolh-ca-config.yaml", "w") as f:
-      f.write(dump({'common_name': ca_issuer_name, 'organization': 'Home', 'organizational_unit': 'Test', 'state_or_province': 'CA', 'country_name': 'US', 'city_or_locality': 'West Sacramento',\
-'signature_algorithm': 'SHA-256', 'signature_hash_algorithm': 'SHA256','certificate_lifetime': '1','certificate_version': 'V3','thumbprint_algorithm': 'SHA1', 'email_address': 'test@local'}))
+      f.write(dump(data, default_flow_style=False))
    return
 
 def load_configuration(ca_issuer_name, cert_lifetime, hash_name):
    with open("seolh-ca-config.yaml", "r") as f:
-      print(load(f.read()))
+      print(load(f.read(data)))
    return
-
 
 app = Flask(__name__)
 
@@ -115,7 +120,6 @@ def version():
 
 @app.route('/ca')
 def ca():
-
    backend = default_backend()
    hash_name = set_hash_name('sha512')
    cert_lifetime = datetime.timedelta(1, 0, 0)
@@ -124,14 +128,14 @@ def ca():
    subject_name1 = set_subject_name(u'Test Root 1')
    private_key1 = set_private_key('secp521r1')
    csr1 = set_csr(private_key1, subject_name1, hash_name)
-
    root_cert = sign_cert(True, private_key1, csr1, serial_number1, cert_lifetime, ca_issuer_name, hash_name)
-   
+   save_configuration('V3', ca_issuer_name, 'test@local', organization, organizational_unit, city_or_locality, state_or_province, country_name, signature_algorithm, signature_hash_algorithm, \
+                       certificate_lifetime, thumbprint_algorithm)
    with open("root_cert.der", "wb") as f:
       f.write(root_cert.public_bytes(serialization.Encoding.DER))
 
-   with open("csr.pem", "wb") as f:
-      f.write(csr1.public_bytes(serialization.Encoding.PEM))
+  # with open("csr.pem", "wb") as f:
+  #    f.write(csr1.public_bytes(serialization.Encoding.PEM))
       
    with open("root_private_key.der", "wb") as f:
       f.write(private_key1.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
@@ -139,16 +143,18 @@ def ca():
    resp = Response(response="ok", status=200, mimetype="application/json")
    return(resp)
 
+@app.route('/save')
+def save():
+   save_configuration(certificate_version, common_name, email_address, organization, organizational_unit, city_or_locality, state_or_province, country_name, signature_algorithm, signature_hash_algorithm, \
+                       certificate_lifetime, thumbprint_algorithm)
+   resp = Response(response=cert_txt, status=200, mimetype="application/json")
+   return(resp)
 
-@app.route('/broken')
-def broken():
-
-    #save_configuration(ca_issuer_name, cert_lifetime, hash_name)
-    #load_configuration(ca_issuer_name, cert_lifetime, hash_name)
-
+@app.route('/load')
+def load():
+    load_configuration()
     resp = Response(response=cert_txt, status=200, mimetype="application/json")
     return(resp)
-
 
 @app.route('/test')
 def test():
@@ -156,16 +162,13 @@ def test():
     hash_name = set_hash_name('sha512')
     cert_lifetime = datetime.timedelta(1, 0, 0)
     ca_issuer_name = 'Test Root 1'
-
     serial_number2 = int(uuid.uuid4())
     subject_name2 = set_subject_name('test')
     private_key2 = set_private_key('secp256r1')
     csr2 = set_csr(private_key2, subject_name2, hash_name)
     client_cert = sign_cert(False, private_key2, csr2, serial_number2, cert_lifetime, ca_issuer_name, hash_name)
-
     cert_txt = client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict") + private_key2.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
        encryption_algorithm=serialization.NoEncryption()).decode(encoding="utf-8", errors="strict")
-
 
     resp = Response(response=cert_txt, status=200, mimetype="application/json")
     return(resp)
@@ -173,7 +176,6 @@ def test():
 @app.route('/csr')
 def csr():
     return render_template('form_submit.html')
-
 
 @app.route('/certificate', methods=['POST'])
 def certificate():
