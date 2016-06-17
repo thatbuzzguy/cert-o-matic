@@ -7,10 +7,11 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric import ec
 import datetime
 import uuid
-from yaml import load, dump
+import yaml
+import json
 from flask import Flask, request, jsonify, Response, render_template
 
-appversion = "SEOLH .005"
+appversion = "SEOLH .007"
 backend = default_backend()
 
 def set_hash_name(hash_name):
@@ -87,10 +88,10 @@ def pem_encode_csr(csr):
     pem = csr.public_bytes(encoding=serialization.Encoding.PEM)
     return(pem)
 
-def save_configuration(certificate_version, common_name, email_address, organization, organizational_unit, city_or_locality, state_or_province, country_name, signature_algorithm, signature_hash_algorithm, \
+def save_configuration(initialized, common_name, email_address, organization, organizational_unit, city_or_locality, state_or_province, country_name, signature_algorithm, signature_hash_algorithm, \
                        certificate_lifetime, thumbprint_algorithm):
    data = {
-      'certificate_version' : certificate_version,
+      'initialized' : initialized, 
       'common_name' : common_name,
       'email_address' : email_address,
       'organization' : organization,
@@ -101,16 +102,24 @@ def save_configuration(certificate_version, common_name, email_address, organiza
       'signature_algorithm' : signature_algorithm,
       'signature_hash_algorithm' : signature_hash_algorithm,
       'certificate_lifetime' : certificate_lifetime,
-      'thumbprint_algorithm' : thumbprint_algorithm}
+      'thumbprint_algorithm' : thumbprint_algorithm,
+      'private_key_file_name' : private_key_file_name,
+      'private_key_format' : private_key_format,
+      'private_key_password' : private_key_password,
+      'root_certificate_file_name' : root_certificate_file_name,
+      'root_certificate_format' : root_certificate_format,
+      }
 
-   with open("seolh-ca-config.yaml", "w") as f:
-      f.write(dump(data, default_flow_style=False))
+   with open("seolh-ca-config.yaml", "w") as stream:
+      stream.write(yaml.dump(data, default_flow_style=False))
    return
 
 def load_configuration(ca_issuer_name, cert_lifetime, hash_name):
-   with open("seolh-ca-config.yaml", "r") as f:
-      print(load(f.read(data)))
-   return
+   data = {}
+   with open("seolh-ca-config.yaml", "r") as stream:
+
+      data = yaml.load(stream)
+   return data
 
 app = Flask(__name__)
 
@@ -152,9 +161,17 @@ def save():
 
 @app.route('/load')
 def load():
-    load_configuration()
-    resp = Response(response=cert_txt, status=200, mimetype="application/json")
-    return(resp)
+   hash_name = set_hash_name('sha512')
+   cert_lifetime = datetime.timedelta(1, 0, 0)
+   ca_issuer_name = 'Test Root 1'
+   data = load_configuration(ca_issuer_name, cert_lifetime, hash_name)
+   
+   #for keys,values in data.items():
+   #   print(keys + ':' + str(values))
+   resp_txt = json.dumps('ok')
+
+   resp = Response(response=resp_txt, status=200, mimetype="application/json")
+   return(resp)
 
 @app.route('/test')
 def test():
