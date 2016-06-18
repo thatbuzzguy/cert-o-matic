@@ -1,12 +1,25 @@
-certificate_lifetime: 1
-certificate_version: V3
-city_or_locality: West Sacramento
-common_name: Test Root 1
-country_name: US
-email_address: test@local
-organization: Home
-organizational_unit: Test
-signature_algorithm: SHA-256
-signature_hash_algorithm: SHA256
-state_or_province: CA
-thumbprint_algorithm: SHA1
+app_version:.006
+config_file:seolh-ca-config.yaml
+back_end:default_backend()
+initialized:yes
+common_name:TestRoot1
+subject_alternate_names:ca.local
+email_address:test@local
+organization:Home
+organizational_unit:Test
+city_or_locality:West Sacramento
+state_or_province:CA
+country_name:US
+signature_algorithm:secp256r1
+signature_hash_algorithm:sha256
+certificate_lifetime:1
+private_key_file_name:root_private_key.der
+private_key_format:der
+private_key_password:null
+root_certificate_file_name:root_cert.der
+root_certificate_format:der
+fqdn:ca.local
+ip_address:127.0.0.1
+database:null
+port_number:80
+auth_psk:afs9dfi9pj34wr09

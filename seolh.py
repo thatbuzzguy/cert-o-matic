@@ -12,77 +12,47 @@ import yaml
 import json
 import adict
 
-class config_thing:
-   #def __init__(self):
-   def __init__(self, **kwds):
-      self.__dict__.update(kwds)
+class certificate_authority:
+   def __init__(self):
+      pass
+   def __getattr__(self, attr):
+      return self[attr]
 
    def save_config(self):
       data = {
-         'app_version' : self.app_version,
-         'config_file' : self.config_file,
-         'back_end' : self.back_end, 
-         'initialized' : self.initialized, 
-         'common_name' : self.common_name,
-         'common_name' : self.subject_alternate_names,
-         'email_address' : self.email_address,
-         'organization' : self.organization,
-         'organizational_unit' : self.organizational_unit,
-         'city_or_locality' : self.city_or_locality,
-         'state_or_province' : self.state_or_province,
-         'country_name' : self.country_name,
-         'signature_algorithm' : self.signature_algorithm,
-         'signature_hash_algorithm' : self.signature_hash_algorithm,
-         'certificate_lifetime' : self.certificate_lifetime,
-         'private_key_file_name' : self.private_key_file_name,
-         'private_key_format' : self.private_key_format,
-         'private_key_password' : self.private_key_password,
-         'root_certificate_file_name' : self.root_certificate_file_name,
-         'root_certificate_format' : self.root_certificate_format,
-         'fqdn' : self.fqdn,
-         'ip_address' : self.ip_address,
-         'port_number' : self.port_number,
-         'auth_psk' : self.auth_psk,
-         'config_file' : self.config_file,
-         'database' : self.database,
-         'port_number' : self.port_number,
-         'auth_psk' : self.auth_psk}
+         'app_version' : self[app_version],
+         'config_file' : self[config_file],
+         'back_end' : self[back_end], 
+         'initialized' : self[initialized], 
+         'common_name' : self[common_name],
+         'common_name' : self[subject_alternate_names],
+         'email_address' : self[email_address],
+         'organization' : self[organization],
+         'organizational_unit' : self[organizational_unit],
+         'city_or_locality' : self[city_or_locality],
+         'state_or_province' : self[state_or_province],
+         'country_name' : self[country_name],
+         'signature_algorithm' : self[signature_algorithm],
+         'signature_hash_algorithm' : self[signature_hash_algorithm],
+         'certificate_lifetime' : self[certificate_lifetime],
+         'private_key_file_name' : self[private_key_file_name],
+         'private_key_format' : self[private_key_format],
+         'private_key_password' : self[private_key_password],
+         'root_certificate_file_name' : self[root_certificate_file_name],
+         'root_certificate_format' : self[root_certificate_format],
+         'fqdn' : self[fqdn],
+         'ip_address' : self[ip_address],
+         'database' : self[database],
+         'port_number' : self[port_number],
+         'auth_psk' : self[auth_psk]}
       with open(self.config_file, "w") as stream:
          stream.write(yaml.dump(data, default_flow_style=False))
       return
 
    def load_config(self):
-      data = adict()
+      data = {}
       with open("seolh-ca-config.yaml", "r") as stream:
-         data = yaml.load(stream)
-      self.app_version = data.app_version
-      self.config_file = data.config_file
-      self.back_end = data.back_end 
-      self.initialized = data.initialized 
-      self.common_name = data.common_name
-      self.common_name = data.subject_alternate_names
-      self.email_address = data.email_address
-      self.organization = data.organization
-      self.organizational_unit = data.organizational_unit
-      self.city_or_locality = data.city_or_locality
-      self.state_or_province = data.state_or_province
-      self.country_name = data.country_name
-      self.signature_algorithm = data.signature_algorithm
-      self.signature_hash_algorithm = data.signature_hash_algorithm
-      self.certificate_lifetime = data.certificate_lifetime
-      self.private_key_file_name = data.private_key_file_name
-      self.private_key_format = data.private_key_format
-      self.private_key_password = data.private_key_password
-      self.root_certificate_file_name = data.root_certificate_file_name
-      self.root_certificate_format = data.root_certificate_format
-      self.fqdn = data.fqdn
-      self.ip_address = data.ip_address
-      self.port_number = data.port_number
-      self.auth_psk = data.auth_psk
-      self.config_file = data.config_file
-      self.database = data.database
-      self.port_number = data.port_number
-      self.auth_psk = data.auth_psk
+         self = yaml.load(stream)
       return 
 
 def set_hash_name(hash_name):
@@ -160,11 +130,11 @@ def pem_encode_csr(csr):
     return(pem)
 
 
-config_obj = config_thing()
+
+
 
 app = Flask(__name__)
-app_version = "Seolh .007"
-backend = default_backend()
+
 
 
 @app.route('/')
@@ -203,24 +173,15 @@ def ca():
 
 @app.route('/save')
 def save():
-   save_configuration(certificate_version, common_name, email_address, organization, organizational_unit, city_or_locality, state_or_province, country_name, signature_algorithm, signature_hash_algorithm, \
-                       certificate_lifetime, thumbprint_algorithm)
-   resp = Response(response=cert_txt, status=200, mimetype="application/json")
+   config_obj.save_config()
+   resp_txt = json.dumps('ok')
+   resp = Response(response=resp_txt, status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/load')
 def load():
-   #hash_name = set_hash_name('sha512')
-   #cert_lifetime = datetime.timedelta(1, 0, 0)
-   #ca_issuer_name = 'Test Root 1'
-   #data = load_configuration(ca_issuer_name, cert_lifetime, hash_name)
-   #for keys,values in data.items():
-   #print(keys + ':' + str(values))
-   
    config_obj.load_config()
-   
    resp_txt = json.dumps('ok')
-
    resp = Response(response=resp_txt, status=200, mimetype="application/json")
    return(resp)
 
@@ -250,8 +211,11 @@ def certificate():
     return render_template('form_action.html', csr=csr)
 
 if __name__ == '__main__':
-  app.run( 
-        host="0.0.0.0",
-        port=int("80")
-  )
+   config_obj = certificate_authority()
+   app_version = "Seolh .007"
+   backend = default_backend()
+   app.run( 
+      host="0.0.0.0",
+      port=int("80")
+   )
 
