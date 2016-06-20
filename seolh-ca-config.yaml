@@ -4,7 +4,7 @@
 'initialized' : 'yes',
 'common_name' : 'TestRoot1',
 'subject_alternate_names' : 'ca.local',
-'email_address' : 'test@local',
+'email_address' : 'test23@local',
 'organization' : 'Home',
 'organizational_unit' : 'Test',
 'city_or_locality' : 'West Sacramento',

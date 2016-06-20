@@ -26,67 +26,71 @@ class certificate_authority(dict):
 def set_hash_name(hash_name):
    hash_name = config_data['hash_name']
    if hash_name == 'sha256':
-       hash_name = hashes.SHA256()
+       hash_obj = hashes.SHA256()
    elif hash_name == 'sha384':
-       hash_name = hashes.SHA384()
+       hash_obj = hashes.SHA384()
    elif hash_name == 'sha512':
-      hash_name = hashes.SHA512()
+      hash_obj = hashes.SHA512()
    elif algo_name == 'whirlpool':
-      hash_name = hashes.Whirlpool()
+      hash_obj = hashes.Whirlpool()
    else:
-      hash_name = hashes.SHA256()
-   return hash_name
+      hash_obj = hashes.SHA256()
+   return hash_obj
 
 def set_algorithm_name(algo_name):
    if algo_name == 'secp256r1':
-      algorithm_name = ec.generate_private_key(ec.SECP256R1, backend)
+      algorithm_obj = ec.generate_private_key(ec.SECP256R1, backend)
    elif algo_name == 'secp384r1':
-       algorithm_name = ec.generate_private_key(ec.SECP384R1, backend)
+       algorithm_obj = ec.generate_private_key(ec.SECP384R1, backend)
    elif algo_name == 'secp521r1':
-       algorithm_name = ec.generate_private_key(ec.SECP521R1, backend)
+       algorithm_obj = ec.generate_private_key(ec.SECP521R1, backend)
    elif algo_name == 'rsa2048':
-      algorithm_name = rsa.generate_private_key(65537, 2048, backend)
+      algorithm_obj = rsa.generate_private_key(65537, 2048, backend)
    elif algo_name == 'rsa4096':
-      algorithm_name = rsa.generate_private_key(65537, 4096, backend)
+      algorithm_obj = rsa.generate_private_key(65537, 4096, backend)
    else:
-      algorithm_name = rsa.generate_private_key(65537, 4096, backend)
-   return(algorithm_name)
+      algorithm_obj = rsa.generate_private_key(65537, 4096, backend)
+   return algorithm_obj
 
-def set_public_key(private_key):
-    public_key = private_key.public_key()
-    return(public_key)
+def set_public_key(private_key_obj):
+    public_key_obj = private_key.public_key()
+    return public_key_obj
 
 def set_subject_name(common_name):
-   subject_name = x509.Name([
-      x509.NameAttribute(NameOID.COUNTRY_NAME, u"US"),
-      x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"CA"),
-      x509.NameAttribute(NameOID.LOCALITY_NAME, u"West Sacramento"),
-      x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"Personal"),
-      x509.NameAttribute(NameOID.COMMON_NAME, common_name),])
-   return subject_name
+   subject_name_obj = x509.Name([
+      x509.NameAttribute(NameOID.COUNTRY_NAME, config_data['country_name']),
+      x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, config_data['state_or_province']),
+      x509.NameAttribute(NameOID.LOCALITY_NAME, config_data['city_or_locality']),
+      x509.NameAttribute(NameOID.ORGANIZATION_NAME, config_data['organization']),
+      x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME, config_data['organizational_unit']),
+      x509.NameAttribute(NameOID.COMMON_NAME, common_name),
+      x509.NameAttribute(NameOID.EMAIL_ADDRESS, config_data['email_address'])
+      ,])
+   
+   return subject_name_obj
 
 def set_csr(private_key_obj, subject_obj, hash_obj):
-    csr = x509.CertificateSigningRequestBuilder().subject_name(subject_obj).sign(private_key_obj, hash_obj, backend)
-    return(csr)
+    csr_obj = x509.CertificateSigningRequestBuilder().subject_name(subject_obj).sign(private_key_obj, hash_obj, backend)
+    return csr_obj
 
 def sign_cert(self_signed, private_key_obj, csr_obj, serial_number, cert_lifetime, ca_issuer_name, hash_obj):
-   builder = x509.CertificateBuilder()
-   builder = builder.issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, ca_issuer_name)]))
-   builder = builder.not_valid_before(datetime.datetime.utcnow())
-   builder = builder.not_valid_after(datetime.datetime.utcnow() + cert_lifetime)
-   builder = builder.serial_number(serial_number)
+   builder_obj = x509.CertificateBuilder()
+   builder_obj = builder_obj.issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, ca_issuer_name)]))
+   builder_obj = builder_obj.not_valid_before(datetime.datetime.utcnow())
+   builder_obj = builder_obj.not_valid_after(datetime.datetime.utcnow() + cert_lifetime)
+   builder_obj = builder_obj.serial_number(serial_number)
 
    if self_signed == True:
-      builder = builder.public_key(private_key_obj.public_key())
+      builder_obj = builder_obj.public_key(private_key_obj.public_key())
 
    else:
-      builder = builder.public_key(csr_obj.public_key())
+      builder_obj = builder_obj.public_key(csr_obj.public_key())
 
-   builder = builder.subject_name(csr_obj.subject)
-   builder = builder.add_extension(x509.BasicConstraints(ca=self_signed, path_length=None), critical=True,)
-   builder = builder.sign(private_key_obj, hash_obj, backend)
+   builder_obj = builder_obj.subject_name(csr_obj.subject)
+   builder_obj = builder_obj.add_extension(x509.BasicConstraints(ca=self_signed, path_length=None), critical=True,)
+   builder_obj = builder_obj.sign(private_key_obj, hash_obj, backend)
 
-   return builder
+   return builder_obj
 
 def pem_encode_private_key(private_key):
     pem = private_key.private_bytes(encoding=serialization.Encoding.PEM,format=serialization.PrivateFormat.TraditionalOpenSSL,encryption_algorithm=serialization.NoEncryption())
@@ -173,8 +177,10 @@ def set_serial_number():
 
 
 
+
 config_data = dict()
 config_data = load_config()
+# if config_data['initialized'] == 1
 print(config_data.get('app_version', ''))
 with open(config_data['private_key_file'], "rb") as key_file:
    private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=default_backend())
@@ -202,6 +208,11 @@ def ca():
 
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj)
    root_cert_obj = sign_cert(True, private_key_obj, csr_obj, config_data['serial_number'], config_data['certificate_lifetime_in_days'], issuer_name, hash_obj)
+
+   with open("root_cert.der", "wb") as f:
+       f.write(root_cert_obj.public_bytes(serialization.Encoding.DER))
+   with open("csr.pem", "wb") as f:
+       f.write(csr_obj.public_bytes(serialization.Encoding.PEM))
 
    resp = Response(response="ok", status=200, mimetype="application/json")
    return(resp)

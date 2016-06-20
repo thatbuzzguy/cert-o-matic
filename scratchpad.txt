@@ -1,3 +1,8 @@
+#   with open("root_cert.der", "wb") as f:
+#      f.write(root_cert.public_bytes(serialization.Encoding.DER))
+     
+#   with open("root_private_key.der", "wb") as f:
+#      f.write(private_key1.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
 
       self.app_version
       self.config_file
