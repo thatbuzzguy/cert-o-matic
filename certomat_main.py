@@ -11,6 +11,8 @@ import uuid
 import yaml
 import json
 import os.path
+import certomat_config
+import certomat_ca
 
 global config_data
 global private_key_obj
@@ -111,99 +113,7 @@ def pem_encode_csr(csr):
     pem = csr.public_bytes(encoding=serialization.Encoding.PEM)
     return(pem)
 
-def save_config():
-   tempdata = {
-   'app_version' : config_data['app_version'],
-   'config_file' : config_data['config_file'],
-   'backend' : config_data['backend'], 
-   'initialized' : config_data['initialized'], 
-   'common_name' : config_data['common_name'],
-   'subject_alternate_names' : config_data['subject_alternate_names'],
-   'serial_number' : config_data['serial_number'],
-   'email_address' : config_data['email_address'],
-   'organization' : config_data['organization'],
-   'organizational_unit' : config_data['organizational_unit'],
-   'city_or_locality' : config_data['city_or_locality'],
-   'state_or_province' : config_data['state_or_province'],
-   'country_name' : config_data['country_name'],
-   'algorithm_name' : config_data['algorithm_name'],
-   'hash_name' : config_data['hash_name'],
-   'certificate_lifetime_in_days' : config_data['certificate_lifetime_in_days'],
-   'private_key_file' : config_data['private_key_file'],
-   'private_key_format' : config_data['private_key_format'],
-   'private_key_password' : config_data['private_key_password'],
-   'root_certificate_file_name' : config_data['root_certificate_file_name'],
-   'root_certificate_format' : config_data['root_certificate_format'],
-   'fqdn' : config_data['fqdn'],
-   'ip_address' : config_data['ip_address'],
-   'database' : config_data['database'],
-   'port_number' : config_data['port_number'],
-   'auth_psk' : config_data['auth_psk']}
-   with open("cert-o-matic.yaml", "w") as stream:
-     stream.write(yaml.dump(tempdata, default_flow_style=False))
-   return
 
-def load_config():
-   temp_data = {}
-   with open("cert-o-matic.yaml", "r") as stream:
-      temp_data = yaml.load(stream)
-
-   config_data['app_version'] = temp_data['app_version']
-   config_data['config_file'] = temp_data['config_file']
-   config_data['backend'] = temp_data['backend'] 
-   config_data['initialized'] = temp_data['initialized'] 
-   config_data['common_name'] = temp_data['common_name']
-   config_data['subject_alternate_names'] = temp_data['subject_alternate_names']
-   config_data['serial_number'] = int(temp_data['serial_number'])
-   config_data['email_address'] = temp_data['email_address']
-   config_data['organization'] = temp_data['organization']
-   config_data['organizational_unit'] = temp_data['organizational_unit']
-   config_data['city_or_locality'] = temp_data['city_or_locality']
-   config_data['state_or_province'] = temp_data['state_or_province']
-   config_data['country_name'] = temp_data['country_name']
-   config_data['algorithm_name'] = temp_data['algorithm_name']
-   config_data['hash_name'] = temp_data['hash_name']
-   config_data['certificate_lifetime_in_days'] = temp_data['certificate_lifetime_in_days']
-   config_data['private_key_file'] = temp_data['private_key_file']
-   config_data['private_key_format'] = temp_data['private_key_format']
-   config_data['private_key_password'] = temp_data['private_key_password']
-   config_data['root_certificate_file_name'] = temp_data['root_certificate_file_name']
-   config_data['root_certificate_format'] = temp_data['root_certificate_format']
-   config_data['fqdn'] = temp_data['fqdn']
-   config_data['ip_address'] = temp_data['ip_address']
-   config_data['database'] = temp_data['database']
-   config_data['port_number'] = temp_data['port_number']
-   config_data['auth_psk'] = temp_data['auth_psk']      
-   return config_data
-
-def default_config(app_version):
-   config_data['app_version'] = app_version
-   config_data['config_file'] = 'cert-o-matic.yaml'
-   config_data['backend'] = 'default_backend' 
-   config_data['initialized'] = True
-   config_data['common_name'] = 'certomatic test ca'
-   config_data['subject_alternate_names'] = 'localhost'
-   config_data['serial_number'] = set_serial_number()
-   config_data['email_address'] = 'root@localhost'
-   config_data['organization'] = 'Flying Circus'
-   config_data['organizational_unit'] = 'Elephant Wrangler Union'
-   config_data['city_or_locality'] = 'Pullman'
-   config_data['state_or_province'] = 'WA'
-   config_data['country_name'] = 'US'
-   config_data['algorithm_name'] = 'rsa4096'
-   config_data['hash_name'] = 'sha512'
-   config_data['certificate_lifetime_in_days'] = '30'
-   config_data['private_key_file'] = 'root_private_key.der'
-   config_data['private_key_format'] = 'der'
-   config_data['private_key_password'] = None
-   config_data['root_certificate_file_name'] = 'root_cert.der'
-   config_data['root_certificate_format'] = 'der'
-   config_data['fqdn'] = 'localhost'
-   config_data['ip_address'] = '127.0.0.1'
-   config_data['database'] = None
-   config_data['port_number'] = 80
-   config_data['auth_psk'] = None  
-   return config_data
 
 def set_serial_number():
    serial_number = int(uuid.uuid4())
@@ -213,25 +123,9 @@ def file_exists(file_name):
    exists = os.path.isfile(file_name)
    return exists
 
-def initialize_ca():
-   subject_obj = set_subject_name(config_data['common_name'])
-   issuer_name = config_data['common_name']
-   private_key_obj = set_private_key(config_data['algorithm_name'])
-   hash_obj = set_hash_name(config_data['hash_name'])
-   certificate_lifetime_obj = datetime.timedelta(days=int(config_data['certificate_lifetime_in_days']))
-
-
-   csr_obj = set_csr(private_key_obj, subject_obj, hash_obj)
-   root_cert_obj = sign_cert(True, private_key_obj, csr_obj, config_data['serial_number'], certificate_lifetime_obj, issuer_name, hash_obj)
-
-   with open("root_cert.der", "wb") as f:
-       f.write(root_cert_obj.public_bytes(serialization.Encoding.DER))
-   with open("csr.pem", "wb") as f:
-       f.write(csr_obj.public_bytes(serialization.Encoding.PEM))
-
 app_version = '.0000004pre-alpaca'
 config_data = dict()
-config_data = load_config()
+config_data = certomat_config.load(config_data)
 backend = set_backend()
 
 print(config_data.get('app_version', ''))
@@ -246,37 +140,35 @@ app = Flask(__name__)
 
 @app.route('/')
 def root():
-   return 'ok'
+   resp = Response(response='ok', status=200, mimetype="application/json")
+   return(resp)
 
 @app.route('/version')
 def version():
    version = config_data.get('app_version', '')
    return version 
 
-
-@app.route('/ca')
-def ca():
-    
-   initialize_ca()
-
+@app.route('/config-init')
+def config_init():
+   certomat_ca.init(config_data)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
-@app.route('/save')
-def save():
-   save_config()
-   # resp_txt = json.dumps('ok')
+@app.route('/config-save')
+def config_save():
+   certomat_config.save(config_data)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
-@app.route('/load')
-def load():
+@app.route('/config-load')
+def config_load():
+   certomat_config.load(config_data)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
-@app.route('/defaultconfig')
-def defaultconfig():
-   default_config(app_version)
+@app.route('/config-default')
+def config_default():
+   certomat_config.default(app_version, set_serial_number(), config_data)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 

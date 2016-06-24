@@ -2,7 +2,7 @@ algorithm_name: rsa4096
 app_version: .0000004pre-alpaca
 auth_psk: null
 backend: default_backend
-certificate_lifetime_in_days: '30'
+certificate_lifetime_in_days: 30
 city_or_locality: Pullman
 common_name: certomatic test ca
 config_file: cert-o-matic.yaml
@@ -21,6 +21,6 @@ private_key_format: der
 private_key_password: null
 root_certificate_file_name: root_cert.der
 root_certificate_format: der
-serial_number: 227018056950984270452738201438824298657
+serial_number: 288877144013680295146736318380149384104
 state_or_province: WA
 subject_alternate_names: localhost
