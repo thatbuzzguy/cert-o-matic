@@ -28,13 +28,15 @@ def save(config_data):
    'database' : config_data['database'],
    'port_number' : config_data['port_number'],
    'auth_psk' : config_data['auth_psk']}
-   with open("cert-o-matic.yaml", "w") as stream:
+   with open("certomat.yaml", "w") as stream:
      stream.write(yaml.dump(tempdata, default_flow_style=False))
    return
 
-def load(config_data):
+def load():
+   config_data = {}
    temp_data = {}
-   with open("cert-o-matic.yaml", "r") as stream:
+
+   with open("certomat.yaml", "r") as stream:
       temp_data = yaml.load(stream)
 
    config_data['app_version'] = temp_data['app_version']
@@ -67,7 +69,7 @@ def load(config_data):
 
 def default(app_version, serial_number, config_data):
    config_data['app_version'] = app_version
-   config_data['config_file'] = 'cert-o-matic.yaml'
+   config_data['config_file'] = 'certomat.yaml'
    config_data['backend'] = 'default_backend' 
    config_data['initialized'] = True
    config_data['common_name'] = 'certomatic test ca'

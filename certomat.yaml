@@ -5,7 +5,7 @@ backend: default_backend
 certificate_lifetime_in_days: 30
 city_or_locality: Pullman
 common_name: certomatic test ca
-config_file: cert-o-matic.yaml
+config_file: certomat.yaml
 country_name: US
 database: null
 email_address: root@localhost
@@ -21,6 +21,6 @@ private_key_format: der
 private_key_password: null
 root_certificate_file_name: root_cert.der
 root_certificate_format: der
-serial_number: 288877144013680295146736318380149384104
+serial_number: 160941648960127117037427540272914056130
 state_or_province: WA
 subject_alternate_names: localhost
