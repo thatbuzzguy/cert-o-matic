@@ -8,7 +8,7 @@ import certomat_core
 import datetime
 
 global private_key_obj
-global app_version
+#global app_version
 
 class certificate():
    def __init__(self, config_data):
@@ -29,6 +29,7 @@ def file_exists(file_name):
 
 app_version = '.0008alpha'
 config_data = certomat_config.load(app_version)
+config_data['ca_config']['app_version'] = app_version
 # print(config_data)
 backend_obj = set_backend(config_data)
 request_obj = certificate(config_data)
