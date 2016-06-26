@@ -1,7 +1,6 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from flask import Flask, request, jsonify, Response, render_template, redirect, url_for
-from collections import defaultdict
 import json
 import os.path
 import certomat_config
@@ -29,15 +28,11 @@ def file_exists(file_name):
    return exists
 
 app_version = '.0007alpha'
-config_data = defaultdict(dict)
 config_data = certomat_config.load(app_version)
-
-#certomat_config.default(app_version, certomat_core.set_serial_number(), config_data)
 print(config_data)
 backend_obj = set_backend(config_data)
 request_obj = certificate(config_data)
 ca_obj = certificate(config_data)
-
 
 if file_exists(config_data['ca_config']['private_key_file']):
    with open(config_data['ca_config']['private_key_file'], "rb") as key_file:

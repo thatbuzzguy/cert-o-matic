@@ -1,6 +1,4 @@
-from collections import defaultdict
 import yaml
-
 
 def save(config_data):
    temp_data = {
@@ -57,47 +55,46 @@ def save(config_data):
 
 def load(app_version):
 
-   nested_dict = lambda: defaultdict(nested_dict)
-   config_data = defaultdict(nested_dict)
-
    with open("certomat.yaml", "r") as stream:
       temp_data = yaml.load(stream)
-
-   config_data['ca_config']['app_version'] = app_version
-   config_data['ca_config']['config_file'] = temp_data['config_file']
-   config_data['ca_config']['backend'] = temp_data['backend']
-   config_data['ca_config']['initialized'] = temp_data['initialized']
-   config_data['ca_config']['common_name'] = temp_data['common_name']
-   config_data['ca_config']['subject_alternate_names'] = temp_data['subject_alternate_names']
-   config_data['ca_config']['serial_number'] = int(temp_data['serial_number'])
-   config_data['ca_config']['email_address'] = temp_data['email_address']
-   config_data['ca_config']['organization'] = temp_data['organization']
-   config_data['ca_config']['organizational_unit'] = temp_data['organizational_unit']
-   config_data['ca_config']['city_or_locality'] = temp_data['city_or_locality']
-   config_data['ca_config']['state_or_province'] = temp_data['state_or_province']
-   config_data['ca_config']['country_name'] = temp_data['country_name']
-   config_data['ca_config']['algorithm_name'] = temp_data['algorithm_name']
-   config_data['ca_config']['hash_name'] = temp_data['hash_name']
-   config_data['ca_config']['certificate_lifetime_in_days'] = temp_data['certificate_lifetime_in_days']
-   config_data['ca_config']['private_key_file'] = temp_data['private_key_file']
-   config_data['ca_config']['private_key_format'] = temp_data['private_key_format']
-   config_data['ca_config']['private_key_password'] = temp_data['private_key_password']
-   config_data['ca_config']['root_certificate_file_name'] = temp_data['root_certificate_file_name']
-   config_data['ca_config']['root_certificate_format'] = temp_data['root_certificate_format']
-   config_data['ca_config']['fqdn'] = temp_data['fqdn']
-   config_data['ca_config']['ip_address'] = temp_data['ip_address']
-   config_data['ca_config']['database'] = temp_data['database']
-   config_data['ca_config']['port_number'] = temp_data['port_number']
-   config_data['ca_config']['auth_psk'] = temp_data['auth_psk']
-   config_data['client_config']['email_address'] = temp_data['email_address']
-   config_data['client_config']['organization'] = temp_data['organization']
-   config_data['client_config']['organizational_unit'] = temp_data['organizational_unit']
-   config_data['client_config']['city_or_locality'] = temp_data['city_or_locality']
-   config_data['client_config']['state_or_province'] = temp_data['state_or_province']
-   config_data['client_config']['country_name'] = temp_data['country_name']
-   config_data['client_config']['algorithm_name'] = temp_data['algorithm_name']
-   config_data['client_config']['hash_name'] = temp_data['hash_name']
-   config_data['client_config']['certificate_lifetime_in_days'] = temp_data['certificate_lifetime_in_days']
+   config_data = {}
+   config_data['ca_config'] = {}
+   config_data['client_config'] = {}
+   config_data['app_version'] = app_version
+   config_data['ca_config']['config_file'] = temp_data['ca_config']['config_file']
+   config_data['ca_config']['backend'] = temp_data['ca_config']['backend']
+   config_data['ca_config']['initialized'] = temp_data['ca_config']['initialized']
+   config_data['ca_config']['common_name'] = temp_data['ca_config']['common_name']
+   config_data['ca_config']['subject_alternate_names'] = temp_data['ca_config']['subject_alternate_names']
+   config_data['ca_config']['serial_number'] = int(temp_data['ca_config']['serial_number'])
+   config_data['ca_config']['email_address'] = temp_data['ca_config']['email_address']
+   config_data['ca_config']['organization'] = temp_data['ca_config']['organization']
+   config_data['ca_config']['organizational_unit'] = temp_data['ca_config']['organizational_unit']
+   config_data['ca_config']['city_or_locality'] = temp_data['ca_config']['city_or_locality']
+   config_data['ca_config']['state_or_province'] = temp_data['ca_config']['state_or_province']
+   config_data['ca_config']['country_name'] = temp_data['ca_config']['country_name']
+   config_data['ca_config']['algorithm_name'] = temp_data['ca_config']['algorithm_name']
+   config_data['ca_config']['hash_name'] = temp_data['ca_config']['hash_name']
+   config_data['ca_config']['certificate_lifetime_in_days'] = temp_data['ca_config']['certificate_lifetime_in_days']
+   config_data['ca_config']['private_key_file'] = temp_data['ca_config']['private_key_file']
+   config_data['ca_config']['private_key_format'] = temp_data['ca_config']['private_key_format']
+   config_data['ca_config']['private_key_password'] = temp_data['ca_config']['private_key_password']
+   config_data['ca_config']['root_certificate_file_name'] = temp_data['ca_config']['root_certificate_file_name']
+   config_data['ca_config']['root_certificate_format'] = temp_data['ca_config']['root_certificate_format']
+   config_data['ca_config']['fqdn'] = temp_data['ca_config']['fqdn']
+   config_data['ca_config']['ip_address'] = temp_data['ca_config']['ip_address']
+   config_data['ca_config']['database'] = temp_data['ca_config']['database']
+   config_data['ca_config']['port_number'] = temp_data['ca_config']['port_number']
+   config_data['ca_config']['auth_psk'] = temp_data['ca_config']['auth_psk']
+   config_data['client_config']['email_address'] = temp_data['client_config']['email_address']
+   config_data['client_config']['organization'] = temp_data['client_config']['organization']
+   config_data['client_config']['organizational_unit'] = temp_data['client_config']['organizational_unit']
+   config_data['client_config']['city_or_locality'] = temp_data['client_config']['city_or_locality']
+   config_data['client_config']['state_or_province'] = temp_data['client_config']['state_or_province']
+   config_data['client_config']['country_name'] = temp_data['client_config']['country_name']
+   config_data['client_config']['algorithm_name'] = temp_data['client_config']['algorithm_name']
+   config_data['client_config']['hash_name'] = temp_data['client_config']['hash_name']
+   config_data['client_config']['certificate_lifetime_in_days'] = temp_data['client_config']['certificate_lifetime_in_days']
    return(config_data)
 
 def default(app_version, serial_number, config_data):
