@@ -1,26 +1,27 @@
-algorithm_name: rsa4096
-app_version: .0000006pre-altimeter
-auth_psk: null
-backend: default_backend
-certificate_lifetime_in_days: 30
-city_or_locality: Pullman
-common_name: certomatic test ca
-config_file: certomat.yaml
-country_name: US
-database: null
-email_address: root@localhost
-fqdn: localhost
-hash_name: sha512
-initialized: true
-ip_address: 127.0.0.1
-organization: Flying Circus
-organizational_unit: Elephant Wrangler Union
-port_number: 80
-private_key_file: root_private_key.der
-private_key_format: der
-private_key_password: null
-root_certificate_file_name: root_cert.der
-root_certificate_format: der
-serial_number: 38859827263920093890321693701592540835
-state_or_province: WA
-subject_alternate_names: localhost
+ca_config:
+  algorithm_name: rsa4096
+  app_version: .0007alpha
+  auth_psk: null
+  backend: default_backend
+  certificate_lifetime_in_days: 30
+  city_or_locality: Pullman
+  common_name: certomatic test ca
+  config_file: certomat.yaml
+  country_name: US
+  database: null
+  email_address: root@localhost
+  fqdn: localhost
+  hash_name: sha512
+  initialized: true
+  ip_address: 127.0.0.1
+  organization: Flying Circus
+  organizational_unit: Elephant Wrangler Union
+  port_number: 80
+  private_key_file: root_private_key.der
+  private_key_format: der
+  private_key_password: null
+  root_certificate_file_name: root_cert.der
+  root_certificate_format: der
+  serial_number: 63974846906956292753302301273517681975
+  state_or_province: WA
+  subject_alternate_names: localhost

@@ -3,8 +3,7 @@ from cryptography.hazmat.primitives import serialization
 from flask import Flask, request, jsonify, Response, render_template, redirect, url_for
 import json
 import os.path
-import certomat_ca_config
-import certomat_client_config
+import certomat_config
 import certomat_core
 import datetime
 
@@ -30,7 +29,7 @@ def file_exists(file_name):
 
 app_version = '.0007alpha'
 print(app_version)
-config_data = certomat_ca_config.load(app_version)
+config_data = certomat_config.load(app_version)
 backend_obj = set_backend(config_data)
 request_obj = certificate(config_data)
 ca_obj = certificate(config_data)
@@ -54,7 +53,7 @@ def root():
 def help():
    resp = Response(response='<html><a href=\"/version\">version</a><p>' + \
    '<a href=\"/initalize\">initalize</a><p>' + \
-   '<a href=\"/process-request\">generate-request</a><p>' + \
+   '<a href=\"/generate-request\">generate-request</a><p>' + \
    '<a href=\"/process-request\">process-request</a><p>' + \
    '<a href=\"/config-save\">config-save</a><p>' + \
    '<a href=\"/config-load\">config-load</a><p>' + \
@@ -75,19 +74,19 @@ def initalize():
 
 @app.route('/config-save')
 def config_save():
-   certomat_ca_config.save(config_data)
+   certomat_config.save(config_data)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/config-load')
 def config_load():
-   certomat_ca_config.load(app_version)
+   certomat_config.load(app_version)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/config-default')
 def config_default():
-   certomat_ca_config.default(app_version, certomat_core.set_serial_number(), config_data)
+   certomat_config.default(app_version, certomat_core.set_serial_number(), config_data)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 

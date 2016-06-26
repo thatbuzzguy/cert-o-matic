@@ -1,7 +1,8 @@
 import yaml
 
 def save(config_data):
-   tempdata = {
+   temp_data = {
+   'ca_config' : {
    'app_version' : config_data['app_version'],
    'config_file' : config_data['config_file'],
    'backend' : config_data['backend'], 
@@ -27,22 +28,34 @@ def save(config_data):
    'ip_address' : config_data['ip_address'],
    'database' : config_data['database'],
    'port_number' : config_data['port_number'],
-   'auth_psk' : config_data['auth_psk']}
+   'auth_psk' : config_data['auth_psk'],
+   'client_email_address' : config_data['email_address'],
+   'client_organization' : config_data['organization'],
+   'client_organizational_unit' : config_data['organizational_unit'],
+   'client_city_or_locality' : config_data['city_or_locality'],
+   'client_state_or_province' : config_data['state_or_province'],
+   'client_country_name' : config_data['country_name'],
+   'client_algorithm_name' : config_data['algorithm_name'],
+   'client_hash_name' : config_data['hash_name'],
+   'client_certificate_lifetime_in_days' : config_data['certificate_lifetime_in_days']}}
+   
    with open("certomat.yaml", "w") as stream:
-     stream.write(yaml.dump(tempdata, default_flow_style=False))
+     stream.write(yaml.dump(temp_data, default_flow_style=False))
    return
 
 def load(app_version):
+   raw_data = {}
    config_data = {}
    temp_data = {}
 
    with open("certomat.yaml", "r") as stream:
-      temp_data = yaml.load(stream)
+      raw_data = yaml.load(stream)
 
+   temp_data = raw_data['ca_config']
    config_data['app_version'] = app_version
    config_data['config_file'] = temp_data['config_file']
-   config_data['backend'] = temp_data['backend'] 
-   config_data['initialized'] = temp_data['initialized'] 
+   config_data['backend'] = temp_data['backend']
+   config_data['initialized'] = temp_data['initialized']
    config_data['common_name'] = temp_data['common_name']
    config_data['subject_alternate_names'] = temp_data['subject_alternate_names']
    config_data['serial_number'] = int(temp_data['serial_number'])
@@ -64,7 +77,7 @@ def load(app_version):
    config_data['ip_address'] = temp_data['ip_address']
    config_data['database'] = temp_data['database']
    config_data['port_number'] = temp_data['port_number']
-   config_data['auth_psk'] = temp_data['auth_psk']      
+   config_data['auth_psk'] = temp_data['auth_psk']    
    return config_data
 
 def default(app_version, serial_number, config_data):
