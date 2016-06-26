@@ -68,7 +68,7 @@ def version():
 
 @app.route('/initalize')
 def initalize():
-   certomat_core.init(config_data, backend_obj)
+   certomat_core.initalize(config_data, backend_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 

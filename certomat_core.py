@@ -94,10 +94,10 @@ def set_serial_number():
    serial_number = int(uuid.uuid4())
    return serial_number
 
-def init(config_data, backend_obj):
+def initalize(config_data, backend_obj):
    subject_obj = set_subject_name(config_data, config_data['common_name'])
    issuer_name = config_data['common_name']
-   private_key_obj = set_private_key(config_data['algorithm_name'], backend_obj)
+   private_key_obj = set_private_key(config_data, backend_obj)
    hash_obj = set_hash_name(config_data)
    certificate_lifetime_obj = datetime.timedelta(days=config_data['certificate_lifetime_in_days'])
 
