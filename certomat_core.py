@@ -106,8 +106,8 @@ def initalize(config_data, backend_obj):
 
    with open("root_cert.der", "wb") as f:
        f.write(root_cert_obj.public_bytes(serialization.Encoding.DER))
-   with open("csr.pem", "wb") as f:
-       f.write(csr_obj.public_bytes(serialization.Encoding.PEM))
+   with open(config_data['ca_config']['private_key_file'], "wb") as f:
+       f.write(private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
    return
 
 def generate_request(config_data, backend_obj, request_obj, ca_obj): 
@@ -123,7 +123,22 @@ def generate_request(config_data, backend_obj, request_obj, ca_obj):
    return cert_txt
 
 def process_request(config_data, backend_obj, request_obj, ca_obj):
+   subject_obj = set_subject_name(config_data, 'test')
+   private_key_obj = set_private_key(config_data, backend_obj)
+   hash_obj = set_hash_name(config_data)
+   serial_number = request_obj.config_data['ca_config']['serial_number']
+   certificate_lifetime_obj = datetime.timedelta(days=request_obj.config_data['ca_config']['certificate_lifetime_in_days'])
+   ca_issuer_name = 'Test Root 1'
+   
+   csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, config_data, backend_obj)
+   client_cert = sign_cert(False, private_key_obj, csr_obj, serial_number, certificate_lifetime_obj, ca_issuer_name, hash_obj, backend_obj)
 
+   cert_txt = client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict")\
+      + private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
+      encryption_algorithm=serialization.NoEncryption()).decode(encoding="utf-8", errors="strict")
+   return cert_txt
+
+def save_request(config_data, backend_obj, request_obj, ca_obj):
    subject_obj = set_subject_name(config_data, 'test')
    private_key_obj = set_private_key(config_data, backend_obj)
    hash_obj = set_hash_name(config_data)

@@ -111,7 +111,7 @@ def default(app_version, serial_number, config_data):
    config_data['ca_config']['city_or_locality'] = 'Pullman'
    config_data['ca_config']['state_or_province'] = 'WA'
    config_data['ca_config']['country_name'] = 'US'
-   config_data['ca_config']['algorithm_name'] = 'rsa4096'
+   config_data['ca_config']['algorithm_name'] = 'secp256r1'
    config_data['ca_config']['hash_name'] = 'sha512'
    config_data['ca_config']['certificate_lifetime_in_days'] = 30
    config_data['ca_config']['private_key_file'] = 'root_private_key.der'
@@ -130,7 +130,7 @@ def default(app_version, serial_number, config_data):
    config_data['client_config']['city_or_locality'] = 'Pullman'
    config_data['client_config']['state_or_province'] = 'WA'
    config_data['client_config']['country_name'] = 'US'
-   config_data['client_config']['algorithm_name'] = 'rsa4096'
+   config_data['client_config']['algorithm_name'] = 'secp256r1'
    config_data['client_config']['hash_name'] = 'sha512'
    config_data['client_config']['certificate_lifetime_in_days'] = 1 
    return config_data

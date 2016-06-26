@@ -1,6 +1,6 @@
 ca_config:
-  algorithm_name: rsa4096
-  app_version: .0007alpha
+  algorithm_name: secp256r1
+  app_version: .0008alpha
   auth_psk: null
   backend: default_backend
   certificate_lifetime_in_days: 30
@@ -22,11 +22,11 @@ ca_config:
   private_key_password: null
   root_certificate_file_name: root_cert.der
   root_certificate_format: der
-  serial_number: 105956455337614229400525445407343725213
+  serial_number: 317614495351059642991465243317910233071
   state_or_province: WA
   subject_alternate_names: localhost
 client_config:
-  algorithm_name: rsa4096
+  algorithm_name: secp256r1
   certificate_lifetime_in_days: sha512
   city_or_locality: Pullman
   country_name: US
