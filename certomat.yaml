@@ -1,6 +1,6 @@
 ca_config:
   algorithm_name: secp256r1
-  app_version: .0008alpha
+  app_version: .0009alpha
   auth_psk: null
   backend: default_backend
   certificate_lifetime_in_days: 30
@@ -8,12 +8,12 @@ ca_config:
   common_name: certomatic test ca
   config_file: certomat.yaml
   country_name: US
-  database: null
+  database: ca_database.txt
   email_address: root@localhost
   fqdn: localhost
   hash_name: sha512
-  initialized: true
   ip_address: 127.0.0.1
+  issuer_name: certomatic cross ca
   organization: Flying Circus
   organizational_unit: Elephant Wrangler Union
   port_number: 80
@@ -22,7 +22,7 @@ ca_config:
   private_key_password: null
   root_certificate_file_name: root_cert.der
   root_certificate_format: der
-  serial_number: 103969648362128459791325121328366123697
+  serial_number: 336770809644932458393148946110345188020
   state_or_province: WA
   subject_alternate_names: localhost
 client_config:

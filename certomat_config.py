@@ -5,9 +5,9 @@ def save(config_data):
    'ca_config' : {
    'app_version' : config_data['ca_config']['app_version'],
    'config_file' : config_data['ca_config']['config_file'],
-   'backend' : config_data['ca_config']['backend'], 
-   'initialized' : config_data['ca_config']['initialized'], 
+   'backend' : config_data['ca_config']['backend'],  
    'common_name' : config_data['ca_config']['common_name'],
+   'issuer_name' : config_data['ca_config']['issuer_name'],
    'subject_alternate_names' : config_data['ca_config']['subject_alternate_names'],
    'serial_number' : config_data['ca_config']['serial_number'],
    'email_address' : config_data['ca_config']['email_address'],
@@ -63,8 +63,8 @@ def load(app_version):
    config_data['app_version'] = app_version
    config_data['ca_config']['config_file'] = temp_data['ca_config']['config_file']
    config_data['ca_config']['backend'] = temp_data['ca_config']['backend']
-   config_data['ca_config']['initialized'] = temp_data['ca_config']['initialized']
    config_data['ca_config']['common_name'] = temp_data['ca_config']['common_name']
+   config_data['ca_config']['issuer_name'] = temp_data['ca_config']['issuer_name']
    config_data['ca_config']['subject_alternate_names'] = temp_data['ca_config']['subject_alternate_names']
    config_data['ca_config']['serial_number'] = int(temp_data['ca_config']['serial_number'])
    config_data['ca_config']['email_address'] = temp_data['ca_config']['email_address']
@@ -101,8 +101,8 @@ def default(app_version, serial_number, config_data):
    config_data['ca_config']['app_version'] = app_version
    config_data['ca_config']['config_file'] = 'certomat.yaml'
    config_data['ca_config']['backend'] = 'default_backend' 
-   config_data['ca_config']['initialized'] = True
    config_data['ca_config']['common_name'] = 'certomatic test ca'
+   config_data['ca_config']['issuer_name'] = 'certomatic cross ca'
    config_data['ca_config']['subject_alternate_names'] = 'localhost'
    config_data['ca_config']['serial_number'] = serial_number
    config_data['ca_config']['email_address'] = 'root@localhost'
@@ -121,7 +121,7 @@ def default(app_version, serial_number, config_data):
    config_data['ca_config']['root_certificate_format'] = 'der'
    config_data['ca_config']['fqdn'] = 'localhost'
    config_data['ca_config']['ip_address'] = '127.0.0.1'
-   config_data['ca_config']['database'] = None
+   config_data['ca_config']['database'] = 'ca_database.txt'
    config_data['ca_config']['port_number'] = 80
    config_data['ca_config']['auth_psk'] = None
    config_data['client_config']['email_address'] = 'user@localhost'

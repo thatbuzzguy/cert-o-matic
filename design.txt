@@ -65,7 +65,7 @@ signature algorithm
 signature hash algorithm
 certificate lifetime
 certificate version
-thumbprint algorithm
+
 
 
 

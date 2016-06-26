@@ -57,11 +57,15 @@ def set_csr(private_key_obj, subject_obj, hash_obj, config_data, backend_obj):
     csr_obj = x509.CertificateSigningRequestBuilder().subject_name(subject_obj).sign(private_key_obj, hash_obj, backend_obj)
     return csr_obj
 
-def sign_cert(self_signed, private_key_obj, csr_obj, serial_number, cert_lifetime, ca_issuer_name, hash_obj, backend_obj):
+def sign_cert(self_signed, private_key_obj, csr_obj, serial_number, cert_lifetime, ca_issuer_name, hash_obj, backend_obj, config_data):
+   utcnow = datetime.datetime.utcnow()
+   serial_number_str = str(serial_number)
+   save_path = 'certificates\\'
+   
    builder_obj = x509.CertificateBuilder()
    builder_obj = builder_obj.issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, ca_issuer_name)]))
-   builder_obj = builder_obj.not_valid_before(datetime.datetime.utcnow())
-   builder_obj = builder_obj.not_valid_after(datetime.datetime.utcnow() + cert_lifetime)
+   builder_obj = builder_obj.not_valid_before(utcnow)
+   builder_obj = builder_obj.not_valid_after(utcnow + cert_lifetime)
    builder_obj = builder_obj.serial_number(serial_number)
 
    if self_signed == True:
@@ -71,8 +75,14 @@ def sign_cert(self_signed, private_key_obj, csr_obj, serial_number, cert_lifetim
       builder_obj = builder_obj.public_key(csr_obj.public_key())
 
    builder_obj = builder_obj.subject_name(csr_obj.subject)
-   builder_obj = builder_obj.add_extension(x509.BasicConstraints(ca=self_signed, path_length=None), critical=True,)
+   builder_obj = builder_obj.add_extension(x509.BasicConstraints(ca=self_signed, path_length=None), critical=True, )
    builder_obj = builder_obj.sign(private_key_obj, hash_obj, backend_obj)
+
+   with open(config_data['ca_config']['database'], "a") as database:
+       database.write(serial_number_str + ' ' + utcnow.strftime("%d/%m/%Y %H:%M:%S") + '\n')
+
+   with open(save_path + serial_number_str + '.der', "ab") as current_certificate:
+       current_certificate.write(builder_obj.public_bytes(serialization.Encoding.DER))
 
    return builder_obj
 
@@ -96,13 +106,13 @@ def set_serial_number():
 
 def initalize(config_data, backend_obj):
    subject_obj = set_subject_name(config_data, config_data['ca_config']['common_name'])
-   issuer_name = config_data['ca_config']['common_name']
+   issuer_name = config_data['ca_config']['issuer_name']
    private_key_obj = set_private_key(config_data, backend_obj)
    hash_obj = set_hash_name(config_data)
    certificate_lifetime_obj = datetime.timedelta(days=config_data['ca_config']['certificate_lifetime_in_days'])
 
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, config_data, backend_obj)
-   root_cert_obj = sign_cert(True, private_key_obj, csr_obj, config_data['ca_config']['serial_number'], certificate_lifetime_obj, issuer_name, hash_obj, backend_obj)
+   root_cert_obj = sign_cert(True, private_key_obj, csr_obj, config_data['ca_config']['serial_number'], certificate_lifetime_obj, issuer_name, hash_obj, backend_obj, config_data)
 
    with open("root_cert.der", "wb") as f:
        f.write(root_cert_obj.public_bytes(serialization.Encoding.DER))
@@ -114,9 +124,9 @@ def generate_request(config_data, backend_obj, request_obj, ca_obj):
    subject_obj = set_subject_name(config_data, 'test')
    private_key_obj = set_private_key(config_data, backend_obj)
    hash_obj = set_hash_name(config_data)
-   serial_number = request_obj.config_data['ca_config']['serial_number']
    certificate_lifetime_obj = datetime.timedelta(days=request_obj.config_data['ca_config']['certificate_lifetime_in_days'])
-   ca_issuer_name = 'Test Root 1'
+   ca_issuer_name = config_data['ca_config']['issuer_name']
+   serial_number = set_serial_number()
    
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, config_data, backend_obj)
    cert_txt = csr_obj.public_bytes(serialization.Encoding.PEM)
@@ -126,12 +136,12 @@ def process_request(config_data, backend_obj, request_obj, ca_obj):
    subject_obj = set_subject_name(config_data, 'test')
    private_key_obj = set_private_key(config_data, backend_obj)
    hash_obj = set_hash_name(config_data)
-   serial_number = request_obj.config_data['ca_config']['serial_number']
    certificate_lifetime_obj = datetime.timedelta(days=request_obj.config_data['ca_config']['certificate_lifetime_in_days'])
-   ca_issuer_name = 'Test Root 1'
+   ca_issuer_name = config_data['ca_config']['issuer_name']
+   serial_number = set_serial_number()
    
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, config_data, backend_obj)
-   client_cert = sign_cert(False, private_key_obj, csr_obj, serial_number, certificate_lifetime_obj, ca_issuer_name, hash_obj, backend_obj)
+   client_cert = sign_cert(False, private_key_obj, csr_obj, serial_number, certificate_lifetime_obj, ca_issuer_name, hash_obj, backend_obj, config_data)
 
    cert_txt = client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict")\
       + private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
@@ -144,10 +154,10 @@ def save_request(config_data, backend_obj, request_obj, ca_obj):
    hash_obj = set_hash_name(config_data)
    serial_number = request_obj.config_data['ca_config']['serial_number']
    certificate_lifetime_obj = datetime.timedelta(days=request_obj.config_data['ca_config']['certificate_lifetime_in_days'])
-   ca_issuer_name = 'Test Root 1'
+   ca_issuer_name = config_data['ca_config']['issuer_name']
    
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, config_data, backend_obj)
-   client_cert = sign_cert(False, private_key_obj, csr_obj, serial_number, certificate_lifetime_obj, ca_issuer_name, hash_obj, backend_obj)
+   client_cert = sign_cert(False, private_key_obj, csr_obj, serial_number, certificate_lifetime_obj, ca_issuer_name, hash_obj, backend_obj, config_data)
 
    cert_txt = client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict")\
       + private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
