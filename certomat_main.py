@@ -1,6 +1,7 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from flask import Flask, request, jsonify, Response, render_template, redirect, url_for
+from collections import defaultdict
 import json
 import os.path
 import certomat_config
@@ -13,10 +14,10 @@ global app_version
 class certificate():
    def __init__(self, config_data):
       self.config_data = config_data
-      self.config_data['serial_number'] = certomat_core.set_serial_number()
+      self.config_data['ca_config']['serial_number'] = certomat_core.set_serial_number()
 
 def set_backend(config_data):
-   backend = config_data['backend']
+   backend = config_data['ca_config']['backend']
    if backend == 'default_backend':
       backend_obj=default_backend()
    else:
@@ -28,14 +29,18 @@ def file_exists(file_name):
    return exists
 
 app_version = '.0007alpha'
-print(app_version)
+config_data = defaultdict(dict)
 config_data = certomat_config.load(app_version)
+
+#certomat_config.default(app_version, certomat_core.set_serial_number(), config_data)
+print(config_data)
 backend_obj = set_backend(config_data)
 request_obj = certificate(config_data)
 ca_obj = certificate(config_data)
 
-if file_exists(config_data['private_key_file']):
-   with open(config_data['private_key_file'], "rb") as key_file:
+
+if file_exists(config_data['ca_config']['private_key_file']):
+   with open(config_data['ca_config']['private_key_file'], "rb") as key_file:
       private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=backend_obj)
 else:
    certomat_ca.init(config_data)
@@ -112,5 +117,5 @@ def certificate(config_data, serial_number):
     return render_template('form_action.html', csr=csr)
 
 if __name__ == '__main__':
-   app.run(host=config_data['ip_address'], port=config_data['port_number'])
+   app.run(host=config_data['ca_config']['ip_address'], port=config_data['ca_config']['port_number'])
 

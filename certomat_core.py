@@ -9,7 +9,7 @@ import datetime
 import uuid
 
 def set_hash_name(config_data):
-   hash_name = config_data['hash_name']
+   hash_name = config_data['ca_config']['hash_name']
    if hash_name == 'sha256':
        hash_obj = hashes.SHA256()
    elif hash_name == 'sha384':
@@ -23,15 +23,15 @@ def set_hash_name(config_data):
    return hash_obj
 
 def set_private_key(config_data, backend_obj):
-   if config_data['algorithm_name'] == 'secp256r1':
+   if config_data['ca_config']['algorithm_name'] == 'secp256r1':
       private_key_obj = ec.generate_private_key(ec.SECP256R1, backend_obj)
-   elif config_data['algorithm_name'] == 'secp384r1':
+   elif config_data['ca_config']['algorithm_name'] == 'secp384r1':
        private_key_obj = ec.generate_private_key(ec.SECP384R1, backend_obj)
-   elif config_data['algorithm_name'] == 'secp521r1':
+   elif config_data['ca_config']['algorithm_name'] == 'secp521r1':
        private_key_obj = ec.generate_private_key(ec.SECP521R1, backend_obj)
-   elif config_data['algorithm_name'] == 'rsa2048':
+   elif config_data['ca_config']['algorithm_name'] == 'rsa2048':
       private_key_obj = rsa.generate_private_key(65537, 2048, backend_obj)
-   elif config_data['algorithm_name'] == 'rsa4096':
+   elif config_data['ca_config']['algorithm_name'] == 'rsa4096':
       private_key_obj = rsa.generate_private_key(65537, 4096, backend_obj)
    else:
       private_key_obj = rsa.generate_private_key(65537, 4096, backend_obj)
@@ -43,13 +43,13 @@ def set_public_key(private_key_obj):
 
 def set_subject_name(config_data, common_name):
    subject_name_obj = x509.Name([
-      x509.NameAttribute(NameOID.COUNTRY_NAME, config_data['country_name']),
-      x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, config_data['state_or_province']),
-      x509.NameAttribute(NameOID.LOCALITY_NAME, config_data['city_or_locality']),
-      x509.NameAttribute(NameOID.ORGANIZATION_NAME, config_data['organization']),
-      x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME, config_data['organizational_unit']),
+      x509.NameAttribute(NameOID.COUNTRY_NAME, config_data['ca_config']['country_name']),
+      x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, config_data['ca_config']['state_or_province']),
+      x509.NameAttribute(NameOID.LOCALITY_NAME, config_data['ca_config']['city_or_locality']),
+      x509.NameAttribute(NameOID.ORGANIZATION_NAME, config_data['ca_config']['organization']),
+      x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME, config_data['ca_config']['organizational_unit']),
       x509.NameAttribute(NameOID.COMMON_NAME, common_name),
-      x509.NameAttribute(NameOID.EMAIL_ADDRESS, config_data['email_address'])
+      x509.NameAttribute(NameOID.EMAIL_ADDRESS, config_data['ca_config']['email_address'])
       ,])
    return subject_name_obj
 
@@ -95,14 +95,14 @@ def set_serial_number():
    return serial_number
 
 def initalize(config_data, backend_obj):
-   subject_obj = set_subject_name(config_data, config_data['common_name'])
-   issuer_name = config_data['common_name']
+   subject_obj = set_subject_name(config_data, config_data['ca_config']['common_name'])
+   issuer_name = config_data['ca_config']['common_name']
    private_key_obj = set_private_key(config_data, backend_obj)
    hash_obj = set_hash_name(config_data)
-   certificate_lifetime_obj = datetime.timedelta(days=config_data['certificate_lifetime_in_days'])
+   certificate_lifetime_obj = datetime.timedelta(days=config_data['ca_config']['certificate_lifetime_in_days'])
 
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, config_data, backend_obj)
-   root_cert_obj = sign_cert(True, private_key_obj, csr_obj, config_data['serial_number'], certificate_lifetime_obj, issuer_name, hash_obj, backend_obj)
+   root_cert_obj = sign_cert(True, private_key_obj, csr_obj, config_data['ca_config']['serial_number'], certificate_lifetime_obj, issuer_name, hash_obj, backend_obj)
 
    with open("root_cert.der", "wb") as f:
        f.write(root_cert_obj.public_bytes(serialization.Encoding.DER))
@@ -114,8 +114,8 @@ def generate_request(config_data, backend_obj, request_obj, ca_obj):
    subject_obj = set_subject_name(config_data, 'test')
    private_key_obj = set_private_key(config_data, backend_obj)
    hash_obj = set_hash_name(config_data)
-   serial_number = request_obj.config_data['serial_number']
-   certificate_lifetime_obj = datetime.timedelta(days=request_obj.config_data['certificate_lifetime_in_days'])
+   serial_number = request_obj.config_data['ca_config']['serial_number']
+   certificate_lifetime_obj = datetime.timedelta(days=request_obj.config_data['ca_config']['certificate_lifetime_in_days'])
    ca_issuer_name = 'Test Root 1'
    
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, config_data, backend_obj)
@@ -127,8 +127,8 @@ def process_request(config_data, backend_obj, request_obj, ca_obj):
    subject_obj = set_subject_name(config_data, 'test')
    private_key_obj = set_private_key(config_data, backend_obj)
    hash_obj = set_hash_name(config_data)
-   serial_number = request_obj.config_data['serial_number']
-   certificate_lifetime_obj = datetime.timedelta(days=request_obj.config_data['certificate_lifetime_in_days'])
+   serial_number = request_obj.config_data['ca_config']['serial_number']
+   certificate_lifetime_obj = datetime.timedelta(days=request_obj.config_data['ca_config']['certificate_lifetime_in_days'])
    ca_issuer_name = 'Test Root 1'
    
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, config_data, backend_obj)

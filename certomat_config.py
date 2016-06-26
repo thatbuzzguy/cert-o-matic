@@ -1,110 +1,139 @@
+from collections import defaultdict
 import yaml
+
 
 def save(config_data):
    temp_data = {
    'ca_config' : {
-   'app_version' : config_data['app_version'],
-   'config_file' : config_data['config_file'],
-   'backend' : config_data['backend'], 
-   'initialized' : config_data['initialized'], 
-   'common_name' : config_data['common_name'],
-   'subject_alternate_names' : config_data['subject_alternate_names'],
-   'serial_number' : config_data['serial_number'],
-   'email_address' : config_data['email_address'],
-   'organization' : config_data['organization'],
-   'organizational_unit' : config_data['organizational_unit'],
-   'city_or_locality' : config_data['city_or_locality'],
-   'state_or_province' : config_data['state_or_province'],
-   'country_name' : config_data['country_name'],
-   'algorithm_name' : config_data['algorithm_name'],
-   'hash_name' : config_data['hash_name'],
-   'certificate_lifetime_in_days' : config_data['certificate_lifetime_in_days'],
-   'private_key_file' : config_data['private_key_file'],
-   'private_key_format' : config_data['private_key_format'],
-   'private_key_password' : config_data['private_key_password'],
-   'root_certificate_file_name' : config_data['root_certificate_file_name'],
-   'root_certificate_format' : config_data['root_certificate_format'],
-   'fqdn' : config_data['fqdn'],
-   'ip_address' : config_data['ip_address'],
-   'database' : config_data['database'],
-   'port_number' : config_data['port_number'],
-   'auth_psk' : config_data['auth_psk'],
-   'client_email_address' : config_data['email_address'],
-   'client_organization' : config_data['organization'],
-   'client_organizational_unit' : config_data['organizational_unit'],
-   'client_city_or_locality' : config_data['city_or_locality'],
-   'client_state_or_province' : config_data['state_or_province'],
-   'client_country_name' : config_data['country_name'],
-   'client_algorithm_name' : config_data['algorithm_name'],
-   'client_hash_name' : config_data['hash_name'],
-   'client_certificate_lifetime_in_days' : config_data['certificate_lifetime_in_days']}}
+   'app_version' : config_data['ca_config']['app_version'],
+   'config_file' : config_data['ca_config']['config_file'],
+   'backend' : config_data['ca_config']['backend'], 
+   'initialized' : config_data['ca_config']['initialized'], 
+   'common_name' : config_data['ca_config']['common_name'],
+   'subject_alternate_names' : config_data['ca_config']['subject_alternate_names'],
+   'serial_number' : config_data['ca_config']['serial_number'],
+   'email_address' : config_data['ca_config']['email_address'],
+   'organization' : config_data['ca_config']['organization'],
+   'organizational_unit' : config_data['ca_config']['organizational_unit'],
+   'city_or_locality' : config_data['ca_config']['city_or_locality'],
+   'state_or_province' : config_data['ca_config']['state_or_province'],
+   'country_name' : config_data['ca_config']['country_name'],
+   'algorithm_name' : config_data['ca_config']['algorithm_name'],
+   'hash_name' : config_data['ca_config']['hash_name'],
+   'certificate_lifetime_in_days' : config_data['ca_config']['certificate_lifetime_in_days'],
+   'private_key_file' : config_data['ca_config']['private_key_file'],
+   'private_key_format' : config_data['ca_config']['private_key_format'],
+   'private_key_password' : config_data['ca_config']['private_key_password'],
+   'root_certificate_file_name' : config_data['ca_config']['root_certificate_file_name'],
+   'root_certificate_format' : config_data['ca_config']['root_certificate_format'],
+   'fqdn' : config_data['ca_config']['fqdn'],
+   'ip_address' : config_data['ca_config']['ip_address'],
+   'database' : config_data['ca_config']['database'],
+   'port_number' : config_data['ca_config']['port_number'],
+   'auth_psk' : config_data['ca_config']['auth_psk'],
+   'email_address' : config_data['ca_config']['email_address'],
+   'organization' : config_data['ca_config']['organization'],
+   'organizational_unit' : config_data['ca_config']['organizational_unit'],
+   'city_or_locality' : config_data['ca_config']['city_or_locality'],
+   'state_or_province' : config_data['ca_config']['state_or_province'],
+   'country_name' : config_data['ca_config']['country_name'],
+   'algorithm_name' : config_data['ca_config']['algorithm_name'],
+   'hash_name' : config_data['ca_config']['hash_name'],
+   'certificate_lifetime_in_days' : config_data['ca_config']['certificate_lifetime_in_days']},
+   'client_config' : {
+   'email_address' : config_data['client_config']['email_address'],
+   'organization' : config_data['client_config']['organization'],
+   'organizational_unit' : config_data['client_config']['organizational_unit'],
+   'city_or_locality' : config_data['client_config']['city_or_locality'],
+   'state_or_province' : config_data['client_config']['state_or_province'],
+   'country_name' : config_data['client_config']['country_name'],
+   'algorithm_name' : config_data['client_config']['algorithm_name'],
+   'hash_name' : config_data['client_config']['hash_name'],
+   'certificate_lifetime_in_days' : config_data['client_config']['hash_name']}}
    
    with open("certomat.yaml", "w") as stream:
      stream.write(yaml.dump(temp_data, default_flow_style=False))
    return
 
 def load(app_version):
-   raw_data = {}
-   config_data = {}
-   temp_data = {}
+
+   nested_dict = lambda: defaultdict(nested_dict)
+   config_data = defaultdict(nested_dict)
 
    with open("certomat.yaml", "r") as stream:
-      raw_data = yaml.load(stream)
+      temp_data = yaml.load(stream)
 
-   temp_data = raw_data['ca_config']
-   config_data['app_version'] = app_version
-   config_data['config_file'] = temp_data['config_file']
-   config_data['backend'] = temp_data['backend']
-   config_data['initialized'] = temp_data['initialized']
-   config_data['common_name'] = temp_data['common_name']
-   config_data['subject_alternate_names'] = temp_data['subject_alternate_names']
-   config_data['serial_number'] = int(temp_data['serial_number'])
-   config_data['email_address'] = temp_data['email_address']
-   config_data['organization'] = temp_data['organization']
-   config_data['organizational_unit'] = temp_data['organizational_unit']
-   config_data['city_or_locality'] = temp_data['city_or_locality']
-   config_data['state_or_province'] = temp_data['state_or_province']
-   config_data['country_name'] = temp_data['country_name']
-   config_data['algorithm_name'] = temp_data['algorithm_name']
-   config_data['hash_name'] = temp_data['hash_name']
-   config_data['certificate_lifetime_in_days'] = temp_data['certificate_lifetime_in_days']
-   config_data['private_key_file'] = temp_data['private_key_file']
-   config_data['private_key_format'] = temp_data['private_key_format']
-   config_data['private_key_password'] = temp_data['private_key_password']
-   config_data['root_certificate_file_name'] = temp_data['root_certificate_file_name']
-   config_data['root_certificate_format'] = temp_data['root_certificate_format']
-   config_data['fqdn'] = temp_data['fqdn']
-   config_data['ip_address'] = temp_data['ip_address']
-   config_data['database'] = temp_data['database']
-   config_data['port_number'] = temp_data['port_number']
-   config_data['auth_psk'] = temp_data['auth_psk']    
-   return config_data
+   config_data['ca_config']['app_version'] = app_version
+   config_data['ca_config']['config_file'] = temp_data['config_file']
+   config_data['ca_config']['backend'] = temp_data['backend']
+   config_data['ca_config']['initialized'] = temp_data['initialized']
+   config_data['ca_config']['common_name'] = temp_data['common_name']
+   config_data['ca_config']['subject_alternate_names'] = temp_data['subject_alternate_names']
+   config_data['ca_config']['serial_number'] = int(temp_data['serial_number'])
+   config_data['ca_config']['email_address'] = temp_data['email_address']
+   config_data['ca_config']['organization'] = temp_data['organization']
+   config_data['ca_config']['organizational_unit'] = temp_data['organizational_unit']
+   config_data['ca_config']['city_or_locality'] = temp_data['city_or_locality']
+   config_data['ca_config']['state_or_province'] = temp_data['state_or_province']
+   config_data['ca_config']['country_name'] = temp_data['country_name']
+   config_data['ca_config']['algorithm_name'] = temp_data['algorithm_name']
+   config_data['ca_config']['hash_name'] = temp_data['hash_name']
+   config_data['ca_config']['certificate_lifetime_in_days'] = temp_data['certificate_lifetime_in_days']
+   config_data['ca_config']['private_key_file'] = temp_data['private_key_file']
+   config_data['ca_config']['private_key_format'] = temp_data['private_key_format']
+   config_data['ca_config']['private_key_password'] = temp_data['private_key_password']
+   config_data['ca_config']['root_certificate_file_name'] = temp_data['root_certificate_file_name']
+   config_data['ca_config']['root_certificate_format'] = temp_data['root_certificate_format']
+   config_data['ca_config']['fqdn'] = temp_data['fqdn']
+   config_data['ca_config']['ip_address'] = temp_data['ip_address']
+   config_data['ca_config']['database'] = temp_data['database']
+   config_data['ca_config']['port_number'] = temp_data['port_number']
+   config_data['ca_config']['auth_psk'] = temp_data['auth_psk']
+   config_data['client_config']['email_address'] = temp_data['email_address']
+   config_data['client_config']['organization'] = temp_data['organization']
+   config_data['client_config']['organizational_unit'] = temp_data['organizational_unit']
+   config_data['client_config']['city_or_locality'] = temp_data['city_or_locality']
+   config_data['client_config']['state_or_province'] = temp_data['state_or_province']
+   config_data['client_config']['country_name'] = temp_data['country_name']
+   config_data['client_config']['algorithm_name'] = temp_data['algorithm_name']
+   config_data['client_config']['hash_name'] = temp_data['hash_name']
+   config_data['client_config']['certificate_lifetime_in_days'] = temp_data['certificate_lifetime_in_days']
+   return(config_data)
 
 def default(app_version, serial_number, config_data):
-   config_data['app_version'] = app_version
-   config_data['config_file'] = 'certomat.yaml'
-   config_data['backend'] = 'default_backend' 
-   config_data['initialized'] = True
-   config_data['common_name'] = 'certomatic test ca'
-   config_data['subject_alternate_names'] = 'localhost'
-   config_data['serial_number'] = serial_number
-   config_data['email_address'] = 'root@localhost'
-   config_data['organization'] = 'Flying Circus'
-   config_data['organizational_unit'] = 'Elephant Wrangler Union'
-   config_data['city_or_locality'] = 'Pullman'
-   config_data['state_or_province'] = 'WA'
-   config_data['country_name'] = 'US'
-   config_data['algorithm_name'] = 'rsa4096'
-   config_data['hash_name'] = 'sha512'
-   config_data['certificate_lifetime_in_days'] = 30
-   config_data['private_key_file'] = 'root_private_key.der'
-   config_data['private_key_format'] = 'der'
-   config_data['private_key_password'] = None
-   config_data['root_certificate_file_name'] = 'root_cert.der'
-   config_data['root_certificate_format'] = 'der'
-   config_data['fqdn'] = 'localhost'
-   config_data['ip_address'] = '127.0.0.1'
-   config_data['database'] = None
-   config_data['port_number'] = 80
-   config_data['auth_psk'] = None  
+   config_data['ca_config']['app_version'] = app_version
+   config_data['ca_config']['config_file'] = 'certomat.yaml'
+   config_data['ca_config']['backend'] = 'default_backend' 
+   config_data['ca_config']['initialized'] = True
+   config_data['ca_config']['common_name'] = 'certomatic test ca'
+   config_data['ca_config']['subject_alternate_names'] = 'localhost'
+   config_data['ca_config']['serial_number'] = serial_number
+   config_data['ca_config']['email_address'] = 'root@localhost'
+   config_data['ca_config']['organization'] = 'Flying Circus'
+   config_data['ca_config']['organizational_unit'] = 'Elephant Wrangler Union'
+   config_data['ca_config']['city_or_locality'] = 'Pullman'
+   config_data['ca_config']['state_or_province'] = 'WA'
+   config_data['ca_config']['country_name'] = 'US'
+   config_data['ca_config']['algorithm_name'] = 'rsa4096'
+   config_data['ca_config']['hash_name'] = 'sha512'
+   config_data['ca_config']['certificate_lifetime_in_days'] = 30
+   config_data['ca_config']['private_key_file'] = 'root_private_key.der'
+   config_data['ca_config']['private_key_format'] = 'der'
+   config_data['ca_config']['private_key_password'] = None
+   config_data['ca_config']['root_certificate_file_name'] = 'root_cert.der'
+   config_data['ca_config']['root_certificate_format'] = 'der'
+   config_data['ca_config']['fqdn'] = 'localhost'
+   config_data['ca_config']['ip_address'] = '127.0.0.1'
+   config_data['ca_config']['database'] = None
+   config_data['ca_config']['port_number'] = 80
+   config_data['ca_config']['auth_psk'] = None
+   config_data['client_config']['email_address'] = 'user@localhost'
+   config_data['client_config']['organization'] = 'Flying Circus'
+   config_data['client_config']['organizational_unit'] = 'Elephant Wrangler Union'
+   config_data['client_config']['city_or_locality'] = 'Pullman'
+   config_data['client_config']['state_or_province'] = 'WA'
+   config_data['client_config']['country_name'] = 'US'
+   config_data['client_config']['algorithm_name'] = 'rsa4096'
+   config_data['client_config']['hash_name'] = 'sha512'
+   config_data['client_config']['certificate_lifetime_in_days'] = 1 
    return config_data
