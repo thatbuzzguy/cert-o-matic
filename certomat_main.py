@@ -1,6 +1,6 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-from flask import Flask, request, jsonify, Response, render_template 
+from flask import Flask, request, jsonify, Response, render_template, redirect, url_for
 import json
 import os.path
 import certomat_config
@@ -8,11 +8,6 @@ import certomat_core
 
 global private_key_obj
 global app_version
-
-class ca:
-   def __init__(self, config_data, serial_number):
-      self.config_data = config_data
-      self.config_data['serial_number'] = certomat_core.set_serial_number()
 
 class certificate:
    def __init__(self, config_data, serial_number):
@@ -31,10 +26,9 @@ def file_exists(file_name):
    exists = os.path.isfile(file_name)
    return exists
 
-app_version = '.0000004pre-alpaca'
-config_data = certomat_config.load()
+app_version = '.0000006pre-altimeter'
+config_data = certomat_config.load(app_version)
 backend_obj = set_backend(config_data)
-
 print(config_data.get('app_version', ''))
 
 if file_exists(config_data['private_key_file']):
@@ -47,12 +41,16 @@ app = Flask(__name__)
 
 @app.route('/')
 def root():
-   resp = Response(response='<html><a href=\"/version\">Version</a><p>' + \
-                   '<a href=\"/initalize\">initalize</a><p>' + \
-                   '<a href=\"/config-save\">config-save</a><p>' + \
-                   '<a href=\"/config-load\">config-load</a><p>' + \
-                   '<a href=\"/config-default\">config-default</a>' \
-                   , status=200)
+   return redirect(url_for('help'))
+
+@app.route('/help')
+def help():
+   resp = Response(response='<html><a href=\"/version\">version</a><p>' + \
+   '<a href=\"/initalize\">initalize</a><p>' + \
+   '<a href=\"/config-save\">config-save</a><p>' + \
+   '<a href=\"/config-load\">config-load</a><p>' + \
+   '<a href=\"/config-default\">config-default</a>' \
+   , status=200)
    return(resp)
 
 @app.route('/version')
@@ -74,7 +72,7 @@ def config_save():
 
 @app.route('/config-load')
 def config_load():
-   certomat_config.load()
+   certomat_config.load(app_version)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 

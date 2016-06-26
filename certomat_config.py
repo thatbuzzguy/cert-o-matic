@@ -32,14 +32,14 @@ def save(config_data):
      stream.write(yaml.dump(tempdata, default_flow_style=False))
    return
 
-def load():
+def load(app_version):
    config_data = {}
    temp_data = {}
 
    with open("certomat.yaml", "r") as stream:
       temp_data = yaml.load(stream)
 
-   config_data['app_version'] = temp_data['app_version']
+   config_data['app_version'] = app_version
    config_data['config_file'] = temp_data['config_file']
    config_data['backend'] = temp_data['backend'] 
    config_data['initialized'] = temp_data['initialized'] 

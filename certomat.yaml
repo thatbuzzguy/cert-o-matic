@@ -1,5 +1,5 @@
 algorithm_name: rsa4096
-app_version: .0000004pre-alpaca
+app_version: .0000006pre-altimeter
 auth_psk: null
 backend: default_backend
 certificate_lifetime_in_days: 30
@@ -21,6 +21,6 @@ private_key_format: der
 private_key_password: null
 root_certificate_file_name: root_cert.der
 root_certificate_format: der
-serial_number: 160941648960127117037427540272914056130
+serial_number: 38859827263920093890321693701592540835
 state_or_province: WA
 subject_alternate_names: localhost
