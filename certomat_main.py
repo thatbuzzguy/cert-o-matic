@@ -5,12 +5,13 @@ import json
 import os.path
 import certomat_config
 import certomat_core
+import datetime
 
 global private_key_obj
 global app_version
 
-class certificate:
-   def __init__(self, config_data, serial_number):
+class certificate():
+   def __init__(self, config_data):
       self.config_data = config_data
       self.config_data['serial_number'] = certomat_core.set_serial_number()
 
@@ -26,17 +27,22 @@ def file_exists(file_name):
    exists = os.path.isfile(file_name)
    return exists
 
-app_version = '.0000006pre-altimeter'
+app_version = '.0007alpha'
+print(app_version)
 config_data = certomat_config.load(app_version)
 backend_obj = set_backend(config_data)
-print(config_data.get('app_version', ''))
+request_obj = certificate(config_data)
+ca_obj = certificate(config_data)
 
 if file_exists(config_data['private_key_file']):
    with open(config_data['private_key_file'], "rb") as key_file:
       private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=backend_obj)
 else:
    certomat_ca.init(config_data)
-   
+
+with open("certomat.log", "a") as log:
+   log.write('Certomat ' + app_version + ' startup ' + datetime.datetime.now().__str__() + '\n')
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -47,6 +53,8 @@ def root():
 def help():
    resp = Response(response='<html><a href=\"/version\">version</a><p>' + \
    '<a href=\"/initalize\">initalize</a><p>' + \
+   '<a href=\"/process-request\">generate-request</a><p>' + \
+   '<a href=\"/process-request\">process-request</a><p>' + \
    '<a href=\"/config-save\">config-save</a><p>' + \
    '<a href=\"/config-load\">config-load</a><p>' + \
    '<a href=\"/config-default\">config-default</a>' \
@@ -82,9 +90,16 @@ def config_default():
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
-@app.route('/test')
-def test():
-   resp = Response(response='ok', status=200, mimetype="application/json")
+@app.route('/generate-request')
+def generate_request():
+   req_text = certomat_core.generate_request(config_data, backend_obj, request_obj, ca_obj)
+   resp = Response(response=req_text, status=200, mimetype="application/json")
+   return(resp)
+
+@app.route('/process-request')
+def process_request():
+   cert_text = certomat_core.process_request(config_data, backend_obj, request_obj, ca_obj)
+   resp = Response(response=cert_text, status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/csr')
@@ -92,7 +107,7 @@ def csr():
     return render_template('form_submit.html')
 
 @app.route('/certificate', methods=['POST'])
-def certificate():
+def certificate(config_data, serial_number):
     csr=request.form['csr']
     return render_template('form_action.html', csr=csr)
 
