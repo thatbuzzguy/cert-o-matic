@@ -59,7 +59,7 @@ def set_csr(private_key_obj, subject_obj, hash_obj, config_data, backend_obj):
 
 def sign_cert(self_signed, private_key_obj, csr_obj, serial_number, cert_lifetime, ca_issuer_name, hash_obj, backend_obj, config_data):
    utcnow = datetime.datetime.utcnow()
-   serial_number_str = str(serial_number)
+   serial_number_str = hex(serial_number)[2:]
    save_path = 'certificates\\'
    
    builder_obj = x509.CertificateBuilder()

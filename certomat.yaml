@@ -1,6 +1,6 @@
 ca_config:
   algorithm_name: secp256r1
-  app_version: .0009alpha
+  app_version: .0010alpha
   auth_psk: null
   backend: default_backend
   certificate_lifetime_in_days: 30
@@ -22,7 +22,7 @@ ca_config:
   private_key_password: null
   root_certificate_file_name: root_cert.der
   root_certificate_format: der
-  serial_number: 336770809644932458393148946110345188020
+  serial_number: 234966697002479033026139008630534448325
   state_or_province: WA
   subject_alternate_names: localhost
 client_config:
