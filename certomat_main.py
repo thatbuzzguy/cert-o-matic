@@ -8,9 +8,13 @@ import certomat_core
 import datetime
 
 class certificate():
-   def __init__(self, config_data):
+   def __init__(self, config_data, app_version):
+      self.app_version = app_version
+      self.serial_number = certomat_core.set_serial_number()
+      self.config_data = {}
+      self.config_data['ca_config'] = {}
+      self.config_data['client_config'] = {}
       self.config_data = config_data
-      #self.config_data['ca_config']['serial_number'] = certomat_core.set_serial_number()
 
 def set_backend(config_data):
    backend = config_data['ca_config']['backend']
@@ -90,13 +94,13 @@ def config_default():
 
 @app.route('/generate-request')
 def generate_request():
-   req_text = certomat_core.generate_request(config_data, backend_obj, request_obj, ca_obj)
+   req_text = certomat_core.generate_request(request_obj, backend_obj)
    resp = Response(response=req_text, status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/process-request')
 def process_request():
-   cert_text = certomat_core.process_request(config_data, backend_obj, request_obj, ca_obj)
+   cert_text = certomat_core.process_request(request_obj, backend_obj)
    resp = Response(response=cert_text, status=200, mimetype="application/json")
    return(resp)
 
