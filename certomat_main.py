@@ -70,25 +70,25 @@ def version():
 
 @app.route('/initalize')
 def initalize():
-   certomat_core.initalize(ca_obj, backend_obj)
+   certomat_core.initalize(request_obj, backend_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/config-save')
 def config_save():
-   certomat_config.save(config_data)
+   certomat_config.save(request_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/config-load')
 def config_load():
-   certomat_config.load(app_version)
+   certomat_config.load(request_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/config-default')
 def config_default():
-   certomat_config.default(app_version, certomat_core.set_serial_number(), config_data)
+   certomat_config.default(request_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
