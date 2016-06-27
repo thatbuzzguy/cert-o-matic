@@ -104,19 +104,20 @@ def set_serial_number():
    serial_number = int(uuid.uuid4())
    return serial_number
 
-def initalize(config_data, backend_obj):
-   subject_obj = set_subject_name(config_data, config_data['ca_config']['common_name'])
-   issuer_name = config_data['ca_config']['issuer_name']
-   private_key_obj = set_private_key(config_data, backend_obj)
-   hash_obj = set_hash_name(config_data)
-   certificate_lifetime_obj = datetime.timedelta(days=config_data['ca_config']['certificate_lifetime_in_days'])
+def initalize(ca_obj, backend_obj):
+   #config_data = ca_obj.config_data
+   subject_obj = set_subject_name(ca_obj.config_data, ca_obj.config_data['ca_config']['common_name'])
+   issuer_name = ca_obj.config_data['ca_config']['issuer_name']
+   private_key_obj = set_private_key(ca_obj.config_data, backend_obj)
+   hash_obj = set_hash_name(ca_obj.config_data)
+   certificate_lifetime_obj = datetime.timedelta(days=ca_obj.config_data['ca_config']['certificate_lifetime_in_days'])
 
-   csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, config_data, backend_obj)
-   root_cert_obj = sign_cert(True, private_key_obj, csr_obj, config_data['ca_config']['serial_number'], certificate_lifetime_obj, issuer_name, hash_obj, backend_obj, config_data)
+   csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, ca_obj.config_data, backend_obj)
+   root_cert_obj = sign_cert(True, private_key_obj, csr_obj, ca_obj.config_data['ca_config']['serial_number'], certificate_lifetime_obj, issuer_name, hash_obj, backend_obj, ca_obj.config_data)
 
    with open("root_cert.der", "wb") as f:
        f.write(root_cert_obj.public_bytes(serialization.Encoding.DER))
-   with open(config_data['ca_config']['private_key_file'], "wb") as f:
+   with open(ca_obj.config_data['ca_config']['private_key_file'], "wb") as f:
        f.write(private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
    return
 

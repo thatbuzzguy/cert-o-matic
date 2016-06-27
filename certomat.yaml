@@ -22,7 +22,7 @@ ca_config:
   private_key_password: null
   root_certificate_file_name: root_cert.der
   root_certificate_format: der
-  serial_number: 234966697002479033026139008630534448325
+  serial_number: 99075527787460763093107522530756503917
   state_or_province: WA
   subject_alternate_names: localhost
 client_config:

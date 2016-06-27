@@ -10,7 +10,7 @@ import datetime
 class certificate():
    def __init__(self, config_data):
       self.config_data = config_data
-      self.config_data['ca_config']['serial_number'] = certomat_core.set_serial_number()
+      #self.config_data['ca_config']['serial_number'] = certomat_core.set_serial_number()
 
 def set_backend(config_data):
    backend = config_data['ca_config']['backend']
@@ -26,7 +26,7 @@ def file_exists(file_name):
 
 app_version = '.0010alpha'
 config_data = certomat_config.load(app_version)
-config_data['ca_config']['app_version'] = app_version
+
 # print(config_data)
 backend_obj = set_backend(config_data)
 request_obj = certificate(config_data)
@@ -36,7 +36,7 @@ if file_exists(config_data['ca_config']['private_key_file']):
    with open(config_data['ca_config']['private_key_file'], "rb") as key_file:
       private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=backend_obj)
 else:
-   certomat_core.initalize(config_data, backend_obj)
+   certomat_core.initalize(ca_obj.config_data, backend_obj)
 
 with open("certomat.log", "a") as log:
    log.write('Certomat ' + app_version + ' startup ' + datetime.datetime.now().__str__() + '\n')
@@ -61,12 +61,12 @@ def help():
 
 @app.route('/version')
 def version():
-   version = config_data.get('app_version', '')
+   version = config_data['ca_config']['app_version']
    return version 
 
 @app.route('/initalize')
 def initalize():
-   certomat_core.initalize(config_data, backend_obj)
+   certomat_core.initalize(ca_obj, backend_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 

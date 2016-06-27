@@ -60,7 +60,7 @@ def load(app_version):
    config_data = {}
    config_data['ca_config'] = {}
    config_data['client_config'] = {}
-   config_data['app_version'] = app_version
+   config_data['ca_config']['app_version'] = app_version
    config_data['ca_config']['config_file'] = temp_data['ca_config']['config_file']
    config_data['ca_config']['backend'] = temp_data['ca_config']['backend']
    config_data['ca_config']['common_name'] = temp_data['ca_config']['common_name']
