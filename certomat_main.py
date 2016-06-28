@@ -8,13 +8,12 @@ import certomat_core
 import datetime
 
 class certificate():
-   def __init__(self, config_data, app_version):
+   def __init__(self, app_version):
       self.app_version = app_version
       self.serial_number = certomat_core.set_serial_number()
       self.config_data = {}
       self.config_data['ca_config'] = {}
       self.config_data['client_config'] = {}
-      self.config_data = config_data
 
 def set_backend(config_data):
    backend = config_data['ca_config']['backend']
@@ -29,15 +28,13 @@ def file_exists(file_name):
    return exists
 
 app_version = '.0010alpha'
-config_data = certomat_config.load(app_version)
+ca_obj = certificate(app_version)
+request_obj = certificate(app_version)
+ca_obj = certomat_config.load(ca_obj)
+backend_obj = set_backend(ca_obj.config_data)
 
-# print(config_data)
-backend_obj = set_backend(config_data)
-request_obj = certificate(config_data)
-ca_obj = certificate(config_data)
-
-if file_exists(config_data['ca_config']['private_key_file']):
-   with open(config_data['ca_config']['private_key_file'], "rb") as key_file:
+if file_exists(ca_obj.config_data['ca_config']['private_key_file']):
+   with open(ca_obj.config_data['ca_config']['private_key_file'], "rb") as key_file:
       private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=backend_obj)
 else:
    certomat_core.initalize(ca_obj.config_data, backend_obj)
@@ -65,48 +62,48 @@ def help():
 
 @app.route('/version')
 def version():
-   version = config_data['ca_config']['app_version']
+   version = ca_obj.app_version
    return version 
 
 @app.route('/initalize')
 def initalize():
-   certomat_core.initalize(request_obj, backend_obj)
+   certomat_core.initalize(ca_obj, backend_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/config-save')
 def config_save():
-   certomat_config.save(request_obj)
+   certomat_config.save(ca_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/config-load')
 def config_load():
-   certomat_config.load(request_obj)
+   certomat_config.load(ca_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/config-default')
 def config_default():
-   certomat_config.default(request_obj)
+   certomat_config.default(ca_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/generate-request')
 def generate_request():
-   req_text = certomat_core.generate_request(request_obj, backend_obj)
+   req_text = certomat_core.generate_request(ca_obj, backend_obj)
    resp = Response(response=req_text, status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/process-request')
 def process_request():
-   cert_text = certomat_core.process_request(request_obj, backend_obj)
+   cert_text = certomat_core.process_request(ca_obj, backend_obj)
    resp = Response(response=cert_text, status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/save-request')
 def save_request():
-   cert_text = certomat_core.save_request(config_data, backend_obj, request_obj, ca_obj)
+   cert_text = certomat_core.save_request(backend_obj, request_obj)
    resp = Response(response=cert_text, status=200, mimetype="application/json")
    return(resp)
 
@@ -121,5 +118,5 @@ def certificate(config_data, serial_number):
     return render_template('form_action.html', csr=csr)
 
 if __name__ == '__main__':
-   app.run(host=config_data['ca_config']['ip_address'], port=config_data['ca_config']['port_number'])
+   app.run(host=ca_obj.config_data['ca_config']['ip_address'], port=ca_obj.config_data['ca_config']['port_number'])
 

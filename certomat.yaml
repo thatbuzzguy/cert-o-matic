@@ -1,6 +1,5 @@
 ca_config:
   algorithm_name: secp256r1
-  app_version: .0010alpha
   auth_psk: null
   backend: default_backend
   certificate_lifetime_in_days: 30
