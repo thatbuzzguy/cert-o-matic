@@ -33,3 +33,4 @@ client_config:
   organization: Flying Circus
   organizational_unit: Elephant Wrangler Union
   state_or_province: WA
+self_signed: true

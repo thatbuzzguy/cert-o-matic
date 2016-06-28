@@ -11,6 +11,7 @@ class certificate():
    def __init__(self, app_version):
       self.app_version = app_version
       self.serial_number = certomat_core.set_serial_number()
+      self.self_signed = bool
       self.config_data = {}
       self.config_data['ca_config'] = {}
       self.config_data['client_config'] = {}

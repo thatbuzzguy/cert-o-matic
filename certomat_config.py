@@ -2,6 +2,7 @@ import yaml
 
 def save(ca_obj):
    temp_data = {
+   'self_signed' : True,      
    'ca_config' : {
    'config_file' : ca_obj.config_data['ca_config']['config_file'],
    'backend' : ca_obj.config_data['ca_config']['backend'],  
@@ -55,6 +56,7 @@ def load(ca_obj):
 
    with open("certomat.yaml", "r") as stream:
       temp_data = yaml.load(stream)
+   ca_obj.config_data['self_signed'] = temp_data['self_signed']
    ca_obj.config_data['ca_config']['config_file'] = temp_data['ca_config']['config_file']
    ca_obj.config_data['ca_config']['backend'] = temp_data['ca_config']['backend']
    ca_obj.config_data['ca_config']['common_name'] = temp_data['ca_config']['common_name']
@@ -91,6 +93,7 @@ def load(ca_obj):
    return(ca_obj)
 
 def default(ca_obj):
+   ca_obj.config_data['self_signed'] = True
    ca_obj.config_data['ca_config']['config_file'] = 'certomat.yaml'
    ca_obj.config_data['ca_config']['backend'] = 'default_backend' 
    ca_obj.config_data['ca_config']['common_name'] = 'certomatic test ca'
