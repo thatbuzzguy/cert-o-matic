@@ -38,7 +38,7 @@ if file_exists(ca_obj.config_data['ca_config']['private_key_file']):
    with open(ca_obj.config_data['ca_config']['private_key_file'], "rb") as key_file:
       private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=backend_obj)
 else:
-   certomat_core.initalize(ca_obj.config_data, backend_obj)
+   certomat_core.initalize(ca_obj, backend_obj)
 
 with open("certomat.log", "a") as log:
    log.write('Certomat ' + app_version + ' startup ' + datetime.datetime.now().__str__() + '\n')
@@ -107,7 +107,6 @@ def save_request():
    cert_text = certomat_core.save_request(backend_obj, request_obj)
    resp = Response(response=cert_text, status=200, mimetype="application/json")
    return(resp)
-
 
 @app.route('/csr')
 def csr():

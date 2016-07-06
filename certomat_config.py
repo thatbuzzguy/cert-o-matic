@@ -1,4 +1,5 @@
 import yaml
+import certomat_core
 
 def save(ca_obj):
    temp_data = {
@@ -93,6 +94,7 @@ def load(ca_obj):
    return(ca_obj)
 
 def default(ca_obj):
+   ca_obj.config_data['self_signed'] = certomat_core.set_serial_number()
    ca_obj.config_data['self_signed'] = True
    ca_obj.config_data['ca_config']['config_file'] = 'certomat.yaml'
    ca_obj.config_data['ca_config']['backend'] = 'default_backend' 
