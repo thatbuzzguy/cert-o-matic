@@ -4,13 +4,13 @@ from flask import Flask, request, jsonify, Response, render_template, redirect, 
 import json
 import os.path
 import certomat_config
-import certomat_core
+import certomat_crypto
 import datetime
 
 class config():
    def __init__(self, app_version):
       self.app_version = app_version
-      self.serial_number = certomat_core.set_serial_number()
+      self.serial_number = certomat_crypto.set_serial_number()
       self.self_signed = bool
       self.data = {}
       self.data['ca_config'] = {}
@@ -38,7 +38,7 @@ if file_exists(config_obj.data['ca_config']['private_key_file']):
    with open(config_obj.data['ca_config']['private_key_file'], "rb") as key_file:
       private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=backend_obj)
 else:
-   certomat_core.initalize(config_obj, backend_obj)
+   certomat_crypto.initalize(config_obj, backend_obj)
 
 with open("certomat.log", "a") as log:
    log.write('Certomat ' + app_version + ' startup ' + datetime.datetime.now().__str__() + '\n')
@@ -68,7 +68,7 @@ def version():
 
 @app.route('/initalize')
 def initalize():
-   certomat_core.initalize(config_obj, backend_obj)
+   certomat_crypto.initalize(config_obj, backend_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
@@ -92,19 +92,19 @@ def config_default():
 
 @app.route('/generate-request')
 def generate_request():
-   req_text = certomat_core.generate_request(config_obj, backend_obj)
+   req_text = certomat_crypto.generate_request(config_obj, backend_obj)
    resp = Response(response=req_text, status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/process-request')
 def process_request():
-   cert_text = certomat_core.process_request(config_obj, backend_obj)
+   cert_text = certomat_crypto.process_request(config_obj, backend_obj)
    resp = Response(response=cert_text, status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/save-request')
 def save_request():
-   cert_text = certomat_core.save_request(backend_obj, request_obj)
+   cert_text = certomat_crypto.save_request(backend_obj, request_obj)
    resp = Response(response=cert_text, status=200, mimetype="application/json")
    return(resp)
 

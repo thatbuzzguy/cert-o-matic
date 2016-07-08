@@ -3,7 +3,7 @@ from cryptography.hazmat.primitives import serialization
 import json
 import os.path
 import certomat_config
-import certomat_core
+import certomat_crypto
 import datetime
 import sys
 
@@ -13,7 +13,7 @@ for arg in sys.argv:
 class config():
    def __init__(self, app_version):
       self.app_version = app_version
-      self.serial_number = certomat_core.set_serial_number()
+      self.serial_number = certomat_crypto.set_serial_number()
       self.self_signed = bool
       self.data = {}
       self.data['ca_config'] = {}
@@ -41,7 +41,7 @@ if file_exists(config_obj.data['ca_config']['private_key_file']):
    with open(config_obj.data['ca_config']['private_key_file'], "rb") as key_file:
       private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=backend_obj)
 else:
-   certomat_core.initalize(config_obj, backend_obj)
+   certomat_crypto.initalize(config_obj, backend_obj)
 
 with open("certomat.log", "a") as log:
    log.write('Certomat ' + app_version + ' startup ' + datetime.datetime.now().__str__() + '\n')
@@ -51,7 +51,7 @@ def version():
    return version 
 
 def initalize():
-   certomat_core.initalize(config_obj, backend_obj)
+   certomat_crypto.initalize(config_obj, backend_obj)
    return
 
 def config_load():
@@ -59,12 +59,18 @@ def config_load():
    return
 
 def generate_request():
-   req_text = certomat_core.generate_request(config_obj, backend_obj)
+   req_text = certomat_crypto.generate_request(config_obj, backend_obj)
    return
 
 
 
+def main():
+    # print command line arguments
+    for arg in sys.argv[1:]:
+        print arg
 
+if __name__ == "__main__":
+    main()
 
 
 
