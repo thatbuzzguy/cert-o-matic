@@ -31,7 +31,7 @@ def file_exists(file_name):
    exists = os.path.isfile(file_name)
    return exists
 
-app_version = '.0011alpha'
+app_version = 'client.0011alpha'
 config_obj = config(app_version)
 request_obj = config(app_version)
 config_obj = certomat_config.load(config_obj)

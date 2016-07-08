@@ -28,7 +28,7 @@ def file_exists(file_name):
    exists = os.path.isfile(file_name)
    return exists
 
-app_version = '.0010alpha'
+app_version = 'server.0011alpha'
 config_obj = config(app_version)
 request_obj = config(app_version)
 config_obj = certomat_config.load(config_obj)
