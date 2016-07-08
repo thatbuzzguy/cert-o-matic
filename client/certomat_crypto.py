@@ -111,6 +111,7 @@ def set_certificate_lifetime(config_obj):
    return certificate_lifetime_obj
 
 def initalize(config_obj, backend_obj):
+
    #config_data = ca_obj.data
    subject_obj = set_subject_name(config_obj)
    issuer_name = config_obj.data['ca_config']['issuer_name']
@@ -159,7 +160,7 @@ def save_request(backend_obj, config_obj):
    private_key_obj = set_private_key(config_obj.data, backend_obj)
    hash_obj = set_hash_name(config_obj)
    certificate_lifetime_obj = datetime.timedelta(days=request_obj.data['ca_config']['certificate_lifetime_in_days'])
-   ca_issuer_name = config_obj.data['ca_config']['issuer_name']
+   #ca_issuer_name = config_obj.data['ca_config']['issuer_name']
    serial_number = config_obj.serial_number
 
    

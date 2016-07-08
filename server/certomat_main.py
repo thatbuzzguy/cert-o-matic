@@ -16,6 +16,12 @@ class config():
       self.data['ca_config'] = {}
       self.data['client_config'] = {}
 
+class request():
+   def __init__(self):
+      self.self_signed = bool
+      self.serial_number = certomat_crypto.set_serial_number()
+      self.data = {}
+
 def set_backend(config_data):
    backend = config_data['ca_config']['backend']
    if backend == 'default_backend':

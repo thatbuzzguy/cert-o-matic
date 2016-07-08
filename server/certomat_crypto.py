@@ -159,14 +159,12 @@ def save_request(backend_obj, certificate_obj):
    private_key_obj = set_private_key(certificate_obj.data, backend_obj)
    hash_obj = set_hash_name(certificate_obj)
    certificate_lifetime_obj = datetime.timedelta(days=request_obj.data['ca_config']['certificate_lifetime_in_days'])
-   ca_issuer_name = certificate_obj.data['ca_config']['issuer_name']
+   #ca_issuer_name = certificate_obj.data['ca_config']['issuer_name']
    serial_number = certificate_obj.serial_number
 
-   
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, certificate_obj.data, backend_obj)
    client_cert = sign_cert(False, private_key_obj, csr_obj, certificate_lifetime_obj, hash_obj, certificate_obj, backend_obj)
    
-
    cert_txt = client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict")\
       + private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
       encryption_algorithm=serialization.NoEncryption()).decode(encoding="utf-8", errors="strict")
