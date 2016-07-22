@@ -3,9 +3,14 @@ from cryptography.hazmat.primitives import serialization
 from flask import Flask, request, jsonify, Response, render_template, redirect, url_for
 import json
 import os.path
+import datetime
+import sys
+
+sys.path.insert(0, sys.path[0]+'..\\..\\library')
+
 import certomat_config
 import certomat_crypto
-import datetime
+
 
 class config():
    def __init__(self, app_version):
@@ -120,12 +125,12 @@ def api_post_request():
       abort(400)
    
 
-    test = {
-        'id': tasks[-1]['id'] + 1,
-        'title': request.json['title'],
-        'description': request.json.get('description', ""),
-        'done': False
-    }
+   # test = {
+   #     'id': tasks[-1]['id'] + 1,
+   #     'title': request.json['title'],
+   #     'description': request.json.get('description', ""),
+   #     'done': False
+   # }
 
    return jsonify({'tasks': tasks})
 

@@ -9,11 +9,15 @@ import datetime
 import uuid
 import json
 import os.path
+import sys
+import datetime
+import getopt
+
+sys.path.insert(0, sys.path[0]+'..\\..\\library')
+
 import certomat_config
 import certomat_crypto
-import datetime
-import sys
-import getopt
+
 
 class config():
    def __init__(self, app_version, serial_number):
