@@ -13,8 +13,8 @@ class config():
       self.serial_number = certomat_crypto.set_serial_number()
       self.self_signed = bool
       self.data = {}
-      self.data['ca_config'] = {}
-      self.data['client_config'] = {}
+      self.data['global_config'] = {}
+      self.data['certificate_config'] = {}
 
 class request():
    def __init__(self):
@@ -23,7 +23,7 @@ class request():
       self.data = {}
 
 def set_backend(config_data):
-   backend = config_data['ca_config']['backend']
+   backend = config_data['global_config']['backend']
    if backend == 'default_backend':
       backend_obj=default_backend()
    else:
@@ -40,8 +40,8 @@ request_obj = config(app_version)
 config_obj = certomat_config.load(config_obj)
 backend_obj = set_backend(config_obj.data)
 
-if file_exists(config_obj.data['ca_config']['private_key_file']):
-   with open(config_obj.data['ca_config']['private_key_file'], "rb") as key_file:
+if file_exists(config_obj.data['global_config']['private_key_file']):
+   with open(config_obj.data['global_config']['private_key_file'], "rb") as key_file:
       private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=backend_obj)
 else:
    certomat_crypto.initalize(config_obj, backend_obj)
@@ -110,9 +110,25 @@ def process_request():
 
 @app.route('/save-request')
 def save_request():
-   cert_text = certomat_crypto.save_request(backend_obj, request_obj)
+   cert_text = certomat_crypto.save_request(config_obj, backend_obj)
    resp = Response(response=cert_text, status=200, mimetype="application/json")
    return(resp)
+
+@app.route('/certomat/api/v1.0/request', methods=['POST'])
+def api_post_request():
+   if not request.json:
+      abort(400)
+   
+
+    test = {
+        'id': tasks[-1]['id'] + 1,
+        'title': request.json['title'],
+        'description': request.json.get('description', ""),
+        'done': False
+    }
+
+   return jsonify({'tasks': tasks})
+
 
 @app.route('/csr')
 def csr():
@@ -124,5 +140,5 @@ def certificate(config_data, serial_number):
     return render_template('form_action.html', csr=csr)
 
 if __name__ == '__main__':
-   app.run(host=config_obj.data['ca_config']['ip_address'], port=config_obj.data['ca_config']['port_number'])
+   app.run(host=config_obj.data['global_config']['ip_address'], port=config_obj.data['global_config']['port_number'])
 

@@ -8,8 +8,8 @@ from cryptography.hazmat.primitives.asymmetric import ec
 import datetime
 import uuid
 
-def set_hash_name(config_obj):
-   hash_name = config_obj.data['ca_config']['hash_name']
+def set_hash_name(certificate_obj):
+   hash_name = certificate_obj.data['global_config']['hash_name']
    if hash_name == 'sha256':
        hash_obj = hashes.SHA256()
    elif hash_name == 'sha384':
@@ -22,8 +22,8 @@ def set_hash_name(config_obj):
       hash_obj = hashes.SHA256()
    return hash_obj
 
-def set_private_key(config_obj, backend_obj):
-   algorithm_name = config_obj.data['ca_config']['algorithm_name']
+def set_private_key(certificate_obj, backend_obj):
+   algorithm_name = certificate_obj.data['global_config']['algorithm_name']
    if algorithm_name == 'secp256r1':
       private_key_obj = ec.generate_private_key(ec.SECP256R1, backend_obj)
    elif algorithm_name == 'secp384r1':
@@ -42,15 +42,15 @@ def set_public_key(private_key_obj):
     public_key_obj = private_key.public_key()
     return public_key_obj
 
-def set_subject_name(config_obj):
+def set_subject_name(certificate_obj):
    subject_name_obj = x509.Name([
-      x509.NameAttribute(NameOID.COUNTRY_NAME, config_obj.data['ca_config']['country_name']),
-      x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, config_obj.data['ca_config']['state_or_province']),
-      x509.NameAttribute(NameOID.LOCALITY_NAME, config_obj.data['ca_config']['city_or_locality']),
-      x509.NameAttribute(NameOID.ORGANIZATION_NAME, config_obj.data['ca_config']['organization']),
-      x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME, config_obj.data['ca_config']['organizational_unit']),
-      x509.NameAttribute(NameOID.COMMON_NAME, config_obj.data['ca_config']['common_name']),
-      x509.NameAttribute(NameOID.EMAIL_ADDRESS, config_obj.data['ca_config']['email_address'])
+      x509.NameAttribute(NameOID.COUNTRY_NAME, certificate_obj.data['global_config']['country_name']),
+      x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, certificate_obj.data['global_config']['state_or_province']),
+      x509.NameAttribute(NameOID.LOCALITY_NAME, certificate_obj.data['global_config']['city_or_locality']),
+      x509.NameAttribute(NameOID.ORGANIZATION_NAME, certificate_obj.data['global_config']['organization']),
+      x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME, certificate_obj.data['global_config']['organizational_unit']),
+      x509.NameAttribute(NameOID.COMMON_NAME, certificate_obj.data['global_config']['common_name']),
+      x509.NameAttribute(NameOID.EMAIL_ADDRESS, certificate_obj.data['global_config']['email_address'])
       ,])
    return subject_name_obj
 
@@ -58,17 +58,17 @@ def set_csr(private_key_obj, subject_obj, hash_obj, backend_obj):
     csr_obj = x509.CertificateSigningRequestBuilder().subject_name(subject_obj).sign(private_key_obj, hash_obj, backend_obj)
     return csr_obj
 
-def sign_cert(self_signed, private_key_obj, csr_obj, cert_lifetime_obj, hash_obj, config_obj, backend_obj):
+def sign_cert(self_signed, private_key_obj, csr_obj, cert_lifetime_obj, hash_obj, certificate_obj, backend_obj):
    utcnow = datetime.datetime.utcnow()
-   temp = config_obj.serial_number
+   temp = certificate_obj.serial_number
    serial_number_str = hex(temp)[2:]
    save_path = 'certificates\\'
    
    builder_obj = x509.CertificateBuilder()
-   builder_obj = builder_obj.issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, config_obj.data['ca_config']['issuer_name'])]))
+   builder_obj = builder_obj.issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, certificate_obj.data['global_config']['issuer_name'])]))
    builder_obj = builder_obj.not_valid_before(utcnow)
    builder_obj = builder_obj.not_valid_after(utcnow + cert_lifetime_obj)
-   builder_obj = builder_obj.serial_number(config_obj.serial_number)
+   builder_obj = builder_obj.serial_number(certificate_obj.serial_number)
 
    if self_signed == True:
       builder_obj = builder_obj.public_key(private_key_obj.public_key())
@@ -80,7 +80,7 @@ def sign_cert(self_signed, private_key_obj, csr_obj, cert_lifetime_obj, hash_obj
    builder_obj = builder_obj.add_extension(x509.BasicConstraints(ca=self_signed, path_length=None), critical=True, )
    builder_obj = builder_obj.sign(private_key_obj, hash_obj, backend_obj)
 
-   with open(config_obj.data['ca_config']['database'], "a") as database:
+   with open(certificate_obj.data['global_config']['database'], "a") as database:
        database.write(serial_number_str + ' ' + utcnow.strftime("%d/%m/%Y %H:%M:%S") + '\n')
 
    with open(save_path + serial_number_str + '.der', "ab") as current_certificate:
@@ -106,68 +106,61 @@ def set_serial_number():
    serial_number = int(uuid.uuid4())
    return serial_number
 
-def set_certificate_lifetime(config_obj):
-   certificate_lifetime_obj = datetime.timedelta(days=config_obj.data['ca_config']['certificate_lifetime_in_days'])
+def set_certificate_lifetime(certificate_obj):
+   certificate_lifetime_obj = datetime.timedelta(days=certificate_obj.data['global_config']['certificate_lifetime_in_days'])
    return certificate_lifetime_obj
 
-def initalize(config_obj, backend_obj):
-
-   #config_data = ca_obj.data
-   subject_obj = set_subject_name(config_obj)
-   issuer_name = config_obj.data['ca_config']['issuer_name']
-   private_key_obj = set_private_key(config_obj, backend_obj)
-   hash_obj = set_hash_name(config_obj)
-   certificate_lifetime_obj = datetime.timedelta(days=config_obj.data['ca_config']['certificate_lifetime_in_days'])
+def initalize(certificate_obj, backend_obj):
+   subject_obj = set_subject_name(certificate_obj)
+   # issuer_name = certificate_obj.data['global_config']['issuer_name']
+   private_key_obj = set_private_key(certificate_obj, backend_obj)
+   hash_obj = set_hash_name(certificate_obj)
+   certificate_lifetime_obj = datetime.timedelta(days=certificate_obj.data['global_config']['certificate_lifetime_in_days'])
 
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, backend_obj)
-   root_cert_obj = sign_cert(True, private_key_obj, csr_obj, certificate_lifetime_obj, hash_obj, config_obj, backend_obj)
+   root_cert_obj = sign_cert(True, private_key_obj, csr_obj, certificate_lifetime_obj, hash_obj, certificate_obj, backend_obj)
    with open("root_cert.der", "wb") as f:
        f.write(root_cert_obj.public_bytes(serialization.Encoding.DER))
-   with open(config_obj.data['ca_config']['private_key_file'], "wb") as f:
+   with open(certificate_obj.data['global_config']['private_key_file'], "wb") as f:
        f.write(private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
    return
 
-def generate_request(config_obj, backend_obj): 
-   subject_obj = set_subject_name(config_obj)
-   private_key_obj = set_private_key(config_obj, backend_obj)
-   hash_obj = set_hash_name(config_obj)
-   certificate_lifetime_obj = set_certificate_lifetime(config_obj)
-   #ca_issuer_name = config_obj.data['ca_config']['issuer_name']
-   serial_number = config_obj.serial_number
+def generate_request(certificate_obj, backend_obj): 
+   subject_obj = set_subject_name(certificate_obj)
+   private_key_obj = set_private_key(certificate_obj, backend_obj)
+   hash_obj = set_hash_name(certificate_obj)
+   certificate_lifetime_obj = set_certificate_lifetime(certificate_obj)
+   serial_number = certificate_obj.serial_number
    
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, backend_obj)
    cert_txt = csr_obj.public_bytes(serialization.Encoding.PEM)
    return cert_txt
 
-def process_request(config_obj, backend_obj):
-   subject_obj = set_subject_name(config_obj)
-   private_key_obj = set_private_key(config_obj, backend_obj)
-   hash_obj = set_hash_name(config_obj)
-   certificate_lifetime_obj = set_certificate_lifetime(config_obj)
-   #ca_issuer_name = config_obj.data['ca_config']['issuer_name']
-   serial_number = config_obj.serial_number
+def process_request(certificate_obj, backend_obj):
+   subject_obj = set_subject_name(certificate_obj)
+   private_key_obj = set_private_key(certificate_obj, backend_obj)
+   hash_obj = set_hash_name(certificate_obj)
+   certificate_lifetime_obj = set_certificate_lifetime(certificate_obj)
+   serial_number = certificate_obj.serial_number
    
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, backend_obj)
-   client_cert = sign_cert(False, private_key_obj, csr_obj, certificate_lifetime_obj, hash_obj, config_obj, backend_obj)
+   client_cert = sign_cert(False, private_key_obj, csr_obj, certificate_lifetime_obj, hash_obj, certificate_obj, backend_obj)
 
    cert_txt = client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict")\
       + private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
       encryption_algorithm=serialization.NoEncryption()).decode(encoding="utf-8", errors="strict")
    return cert_txt
 
-def save_request(backend_obj, config_obj):
-   subject_obj = set_subject_name(config_obj)
-   private_key_obj = set_private_key(config_obj.data, backend_obj)
-   hash_obj = set_hash_name(config_obj)
-   certificate_lifetime_obj = datetime.timedelta(days=request_obj.data['ca_config']['certificate_lifetime_in_days'])
-   #ca_issuer_name = config_obj.data['ca_config']['issuer_name']
-   serial_number = config_obj.serial_number
+def save_request(backend_obj, certificate_obj):
+   subject_obj = set_subject_name(certificate_obj)
+   private_key_obj = set_private_key(certificate_obj.data, backend_obj)
+   hash_obj = set_hash_name(certificate_obj)
+   certificate_lifetime_obj = datetime.timedelta(days=request_obj.data['global_config']['certificate_lifetime_in_days'])
+   serial_number = certificate_obj.serial_number
 
+   csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, certificate_obj.data, backend_obj)
+   client_cert = sign_cert(False, private_key_obj, csr_obj, certificate_lifetime_obj, hash_obj, certificate_obj, backend_obj)
    
-   csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, config_obj.data, backend_obj)
-   client_cert = sign_cert(False, private_key_obj, csr_obj, certificate_lifetime_obj, hash_obj, config_obj, backend_obj)
-   
-
    cert_txt = client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict")\
       + private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
       encryption_algorithm=serialization.NoEncryption()).decode(encoding="utf-8", errors="strict")

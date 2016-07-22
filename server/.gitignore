@@ -1,6 +1,0 @@
-# exclude everything except directory foo/bar
-__pycache__/*.* 
-*.pem
-*.csr
-*.der
-*.ico
