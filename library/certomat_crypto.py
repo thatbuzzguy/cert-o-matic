@@ -110,7 +110,7 @@ def set_serial_number():
    return serial_number
 
 def set_random_string():
-   random_string = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(10))
+   random_string = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(15))
    return random_string
 
 def set_certificate_lifetime(config_obj):

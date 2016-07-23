@@ -126,7 +126,11 @@ def api_post_request():
       'csr': request.json['csr']
    }
 
-   return jsonify({'tasks': tasks})
+   
+
+   return
+
+# jsonify({'tasks': tasks})
 
 
 @app.route('/csr')

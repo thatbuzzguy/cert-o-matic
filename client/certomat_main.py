@@ -39,28 +39,39 @@ def file_exists(file_name):
    exists = os.path.isfile(file_name)
    return exists
 
+def usage():
+   print('usage: certomat.py -h')
+   print('       certomat.py -c <common_name>')
+   print('       certomat.py -r')
+   return
+	
 def main(config_obj, request_obj, argv):
-   common_name = ''
+   common_name = 'test'
    try:
-     opts, args = getopt.getopt(argv,"hvrc:",["common_name="])
+      opts, args = getopt.getopt(argv, 'hvrc:', ['help', 'version', 'random', 'common_name='])
+      if not opts:
+         usage()
+         sys.exit(2)
    except getopt.GetoptError:
-      print('usage: certomat.py -h')
-      print('       certomat.py -c <common_name>')
-      print('       certomat.py -r')
+      usage()
       sys.exit(2)
+		
    for opt, arg in opts:
-      if opt in ("-h", "--help"):
-         print('usage: certomat.py -h')
-         print('       certomat.py -c <common_name>')
-         print('       certomat.py -r')
+      if opt in ('-h', '--help'):
+         usage()
+         sys.exit()
+      elif opt in ('-v', '--version'):
+         print(version())
          sys.exit()
       elif opt in ("-c", "--common_name"):
+         common_name = arg           
+      elif opt in ('-r', '--random'):
          common_name = certomat_crypto.set_random_string()
-      elif opt in ("-r", "--random"):
-         common_name = arg         
-      elif opt in ("-v", "--version"):
-         print(version())
-  #config_obj.data['certificate_config']['common_name'] = common_name
+      else:
+         usage()	
+         sys.exit()
+      
+   print("creating request for " + common_name)
 
    subject_obj = certomat_crypto.set_subject_name(config_obj, common_name)
    private_key_obj = certomat_crypto.set_private_key(config_obj, backend_obj)
@@ -72,7 +83,6 @@ def main(config_obj, request_obj, argv):
    csr_obj = certomat_crypto.set_csr(private_key_obj, subject_obj, hash_obj, backend_obj)
    req_txt = certomat_crypto.pem_encode_csr(csr_obj)
    
-
    with open("private_key.pem", "w") as req:
       req.write(private_key_txt)
 
@@ -80,8 +90,10 @@ def main(config_obj, request_obj, argv):
       req.write(req_txt)
 
 
+   r = requests.put('localhost/certomat/api/v1.0/request', data = {'csr':req_txt})		
 
-
+		
+		
 app_version = 'client.0014alpha'
 serial_number = certomat_crypto.set_serial_number()
 config_obj = config(app_version, serial_number)
