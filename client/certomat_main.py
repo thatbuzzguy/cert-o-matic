@@ -12,6 +12,7 @@ import os.path
 import sys
 import datetime
 import getopt
+import requests
 
 sys.path.insert(0, sys.path[0]+'..\\..\\library')
 
@@ -38,37 +39,30 @@ def file_exists(file_name):
    exists = os.path.isfile(file_name)
    return exists
 
-#def version():
-   version = config_obj.app_version
-   return version 
-
-#def config_load():
-   certomat_config.load(config_obj)
-   return
-
-#def generate_request():
-   req_text = certomat_crypto.generate_request(config_obj, backend_obj)
-   return
-
 def main(config_obj, request_obj, argv):
    common_name = ''
-  # try:
-  #   opts, args = getopt.getopt(argv,"hvc:",["common_name="])
-  #    opts, args = getopt.getopt(argv,"hvc:",["common_name="])
-  # except getopt.GetoptError:
-  #    print('test.py -c <common_name>')
-  #    sys.exit(2)
-  # for opt, arg in opts:
-  #    if opt in ("-h", "--help"):
-  #       print('usage: certomat.py -h')
-  #       sys.exit()
-  #    elif opt in ("-c", "--common_name"):
-  #       common_name = arg
-  #    elif opt in ("-v", "--version"):
-  #       print(version())
+   try:
+     opts, args = getopt.getopt(argv,"hvrc:",["common_name="])
+   except getopt.GetoptError:
+      print('usage: certomat.py -h')
+      print('       certomat.py -c <common_name>')
+      print('       certomat.py -r')
+      sys.exit(2)
+   for opt, arg in opts:
+      if opt in ("-h", "--help"):
+         print('usage: certomat.py -h')
+         print('       certomat.py -c <common_name>')
+         print('       certomat.py -r')
+         sys.exit()
+      elif opt in ("-c", "--common_name"):
+         common_name = certomat_crypto.set_random_string()
+      elif opt in ("-r", "--random"):
+         common_name = arg         
+      elif opt in ("-v", "--version"):
+         print(version())
   #config_obj.data['certificate_config']['common_name'] = common_name
 
-   subject_obj = certomat_crypto.set_subject_name(config_obj)
+   subject_obj = certomat_crypto.set_subject_name(config_obj, common_name)
    private_key_obj = certomat_crypto.set_private_key(config_obj, backend_obj)
    private_key_txt = certomat_crypto.pem_encode_private_key(private_key_obj)
    
@@ -86,7 +80,9 @@ def main(config_obj, request_obj, argv):
       req.write(req_txt)
 
 
-app_version = 'client.0013alpha'
+
+
+app_version = 'client.0014alpha'
 serial_number = certomat_crypto.set_serial_number()
 config_obj = config(app_version, serial_number)
 request_obj = config(app_version, serial_number)

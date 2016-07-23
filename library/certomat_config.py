@@ -51,46 +51,53 @@ def save(config_obj):
    
    with open("certomat.yaml", "w") as stream:
      stream.write(yaml.dump(temp_data, default_flow_style=False))
+     
    return
 
 def load(config_obj):
+   try:
+      with open("certomat.yaml", "r") as stream:
+         temp_data = yaml.load(stream)
 
-   with open("certomat.yaml", "r") as stream:
-      temp_data = yaml.load(stream)
-   config_obj.data['self_signed'] = temp_data['self_signed']
-   config_obj.data['global_config']['config_file'] = temp_data['global_config']['config_file']
-   config_obj.data['global_config']['backend'] = temp_data['global_config']['backend']
-   config_obj.data['global_config']['common_name'] = temp_data['global_config']['common_name']
-   config_obj.data['global_config']['issuer_name'] = temp_data['global_config']['issuer_name']
-   config_obj.data['global_config']['subject_alternate_names'] = temp_data['global_config']['subject_alternate_names']
-   config_obj.data['global_config']['email_address'] = temp_data['global_config']['email_address']
-   config_obj.data['global_config']['organization'] = temp_data['global_config']['organization']
-   config_obj.data['global_config']['organizational_unit'] = temp_data['global_config']['organizational_unit']
-   config_obj.data['global_config']['city_or_locality'] = temp_data['global_config']['city_or_locality']
-   config_obj.data['global_config']['state_or_province'] = temp_data['global_config']['state_or_province']
-   config_obj.data['global_config']['country_name'] = temp_data['global_config']['country_name']
-   config_obj.data['global_config']['algorithm_name'] = temp_data['global_config']['algorithm_name']
-   config_obj.data['global_config']['hash_name'] = temp_data['global_config']['hash_name']
-   config_obj.data['global_config']['certificate_lifetime_in_days'] = temp_data['global_config']['certificate_lifetime_in_days']
-   config_obj.data['global_config']['private_key_file'] = temp_data['global_config']['private_key_file']
-   config_obj.data['global_config']['private_key_format'] = temp_data['global_config']['private_key_format']
-   config_obj.data['global_config']['private_key_password'] = temp_data['global_config']['private_key_password']
-   config_obj.data['global_config']['root_certificate_file_name'] = temp_data['global_config']['root_certificate_file_name']
-   config_obj.data['global_config']['root_certificate_format'] = temp_data['global_config']['root_certificate_format']
-   config_obj.data['global_config']['fqdn'] = temp_data['global_config']['fqdn']
-   config_obj.data['global_config']['ip_address'] = temp_data['global_config']['ip_address']
-   config_obj.data['global_config']['database'] = temp_data['global_config']['database']
-   config_obj.data['global_config']['port_number'] = temp_data['global_config']['port_number']
-   config_obj.data['global_config']['auth_psk'] = temp_data['global_config']['auth_psk']
-   config_obj.data['certificate_config']['email_address'] = temp_data['certificate_config']['email_address']
-   config_obj.data['certificate_config']['organization'] = temp_data['certificate_config']['organization']
-   config_obj.data['certificate_config']['organizational_unit'] = temp_data['certificate_config']['organizational_unit']
-   config_obj.data['certificate_config']['city_or_locality'] = temp_data['certificate_config']['city_or_locality']
-   config_obj.data['certificate_config']['state_or_province'] = temp_data['certificate_config']['state_or_province']
-   config_obj.data['certificate_config']['country_name'] = temp_data['certificate_config']['country_name']
-   config_obj.data['certificate_config']['algorithm_name'] = temp_data['certificate_config']['algorithm_name']
-   config_obj.data['certificate_config']['hash_name'] = temp_data['certificate_config']['hash_name']
-   config_obj.data['certificate_config']['certificate_lifetime_in_days'] = temp_data['certificate_config']['certificate_lifetime_in_days']
+      config_obj.data['self_signed'] = temp_data['self_signed']
+      config_obj.data['global_config']['config_file'] = temp_data['global_config']['config_file']
+      config_obj.data['global_config']['backend'] = temp_data['global_config']['backend']
+      config_obj.data['global_config']['common_name'] = temp_data['global_config']['common_name']
+      config_obj.data['global_config']['issuer_name'] = temp_data['global_config']['issuer_name']
+      config_obj.data['global_config']['subject_alternate_names'] = temp_data['global_config']['subject_alternate_names']
+      config_obj.data['global_config']['email_address'] = temp_data['global_config']['email_address']
+      config_obj.data['global_config']['organization'] = temp_data['global_config']['organization']
+      config_obj.data['global_config']['organizational_unit'] = temp_data['global_config']['organizational_unit']
+      config_obj.data['global_config']['city_or_locality'] = temp_data['global_config']['city_or_locality']
+      config_obj.data['global_config']['state_or_province'] = temp_data['global_config']['state_or_province']
+      config_obj.data['global_config']['country_name'] = temp_data['global_config']['country_name']
+      config_obj.data['global_config']['algorithm_name'] = temp_data['global_config']['algorithm_name']
+      config_obj.data['global_config']['hash_name'] = temp_data['global_config']['hash_name']
+      config_obj.data['global_config']['certificate_lifetime_in_days'] = temp_data['global_config']['certificate_lifetime_in_days']
+      config_obj.data['global_config']['private_key_file'] = temp_data['global_config']['private_key_file']
+      config_obj.data['global_config']['private_key_format'] = temp_data['global_config']['private_key_format']
+      config_obj.data['global_config']['private_key_password'] = temp_data['global_config']['private_key_password']
+      config_obj.data['global_config']['root_certificate_file_name'] = temp_data['global_config']['root_certificate_file_name']
+      config_obj.data['global_config']['root_certificate_format'] = temp_data['global_config']['root_certificate_format']
+      config_obj.data['global_config']['fqdn'] = temp_data['global_config']['fqdn']
+      config_obj.data['global_config']['ip_address'] = temp_data['global_config']['ip_address']
+      config_obj.data['global_config']['database'] = temp_data['global_config']['database']
+      config_obj.data['global_config']['port_number'] = temp_data['global_config']['port_number']
+      config_obj.data['global_config']['auth_psk'] = temp_data['global_config']['auth_psk']
+      config_obj.data['certificate_config']['email_address'] = temp_data['certificate_config']['email_address']
+      config_obj.data['certificate_config']['organization'] = temp_data['certificate_config']['organization']
+      config_obj.data['certificate_config']['organizational_unit'] = temp_data['certificate_config']['organizational_unit']
+      config_obj.data['certificate_config']['city_or_locality'] = temp_data['certificate_config']['city_or_locality']
+      config_obj.data['certificate_config']['state_or_province'] = temp_data['certificate_config']['state_or_province']
+      config_obj.data['certificate_config']['country_name'] = temp_data['certificate_config']['country_name']
+      config_obj.data['certificate_config']['algorithm_name'] = temp_data['certificate_config']['algorithm_name']
+      config_obj.data['certificate_config']['hash_name'] = temp_data['certificate_config']['hash_name']
+      config_obj.data['certificate_config']['certificate_lifetime_in_days'] = temp_data['certificate_config']['certificate_lifetime_in_days']
+
+   except:
+      default(config_obj)
+      save(config_obj)
+
    return(config_obj)
 
 def default(config_obj):
@@ -128,5 +135,7 @@ def default(config_obj):
    config_obj.data['certificate_config']['country_name'] = 'US'
    config_obj.data['certificate_config']['algorithm_name'] = 'secp256r1'
    config_obj.data['certificate_config']['hash_name'] = 'sha512'
-   config_obj.data['certificate_config']['certificate_lifetime_in_days'] = 1 
+   config_obj.data['certificate_config']['certificate_lifetime_in_days'] = 1
    return config_obj
+
+

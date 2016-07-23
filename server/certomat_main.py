@@ -11,11 +11,10 @@ sys.path.insert(0, sys.path[0]+'..\\..\\library')
 import certomat_config
 import certomat_crypto
 
-
 class config():
-   def __init__(self, app_version):
-      self.app_version = app_version
-      self.serial_number = certomat_crypto.set_serial_number()
+   def __init__(self):
+      self.app_version = 'server.0014alpha'
+      #self.serial_number = int
       self.self_signed = bool
       self.data = {}
       self.data['global_config'] = {}
@@ -23,8 +22,8 @@ class config():
 
 class request():
    def __init__(self):
+      self.serial_number = int
       self.self_signed = bool
-      self.serial_number = certomat_crypto.set_serial_number()
       self.data = {}
 
 def set_backend(config_data):
@@ -39,9 +38,8 @@ def file_exists(file_name):
    exists = os.path.isfile(file_name)
    return exists
 
-app_version = 'server.0011alpha'
-config_obj = config(app_version)
-request_obj = config(app_version)
+config_obj = config()
+request_obj = config()
 config_obj = certomat_config.load(config_obj)
 backend_obj = set_backend(config_obj.data)
 
@@ -52,7 +50,7 @@ else:
    certomat_crypto.initalize(config_obj, backend_obj)
 
 with open("certomat.log", "a") as log:
-   log.write('Certomat ' + app_version + ' startup ' + datetime.datetime.now().__str__() + '\n')
+   log.write('Certomat ' + config_obj.app_version + ' startup ' + datetime.datetime.now().__str__() + '\n')
 
 app = Flask(__name__)
 
@@ -121,16 +119,12 @@ def save_request():
 
 @app.route('/certomat/api/v1.0/request', methods=['POST'])
 def api_post_request():
-   if not request.json:
+   if not request.json or not 'csr' in request.json:
       abort(400)
    
-
-   # test = {
-   #     'id': tasks[-1]['id'] + 1,
-   #     'title': request.json['title'],
-   #     'description': request.json.get('description', ""),
-   #     'done': False
-   # }
+   request = {
+      'csr': request.json['csr']
+   }
 
    return jsonify({'tasks': tasks})
 
