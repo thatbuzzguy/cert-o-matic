@@ -1,13 +1,13 @@
 certificate_config:
   algorithm_name: secp256r1
-  certificate_lifetime_in_days: sha512
-  city_or_locality: Pullman
+  certificate_lifetime_in_days: 10
+  city_or_locality: West Sacramento
   country_name: US
-  email_address: user@localhost
+  email_address: ryan@real.com
   hash_name: sha512
-  organization: Flying Circus
-  organizational_unit: Elephant Wrangler Union
-  state_or_province: WA
+  organization: Home
+  organizational_unit: Fawkes Code International
+  state_or_province: CA
 global_config:
   algorithm_name: secp256r1
   auth_psk: null

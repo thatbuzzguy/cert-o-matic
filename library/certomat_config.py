@@ -47,7 +47,7 @@ def save(config_obj):
    'country_name' : config_obj.data['certificate_config']['country_name'],
    'algorithm_name' : config_obj.data['certificate_config']['algorithm_name'],
    'hash_name' : config_obj.data['certificate_config']['hash_name'],
-   'certificate_lifetime_in_days' : config_obj.data['certificate_config']['hash_name']}}
+   'certificate_lifetime_in_days' : config_obj.data['certificate_config']['certificate_lifetime_in_days']}}
    
    with open("certomat.yaml", "w") as stream:
      stream.write(yaml.dump(temp_data, default_flow_style=False))
@@ -106,7 +106,7 @@ def default(config_obj):
    config_obj.data['global_config']['config_file'] = 'certomat.yaml'
    config_obj.data['global_config']['backend'] = 'default_backend' 
    config_obj.data['global_config']['common_name'] = 'certomatic test ca'
-   config_obj.data['global_config']['issuer_name'] = 'certomatic cross ca'
+   config_obj.data['global_config']['issuer_name'] = 'certomatic test ca'
    config_obj.data['global_config']['subject_alternate_names'] = 'localhost'
    config_obj.data['global_config']['email_address'] = 'root@localhost'
    config_obj.data['global_config']['organization'] = 'Flying Circus'
