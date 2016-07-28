@@ -83,15 +83,16 @@ def main(config_obj, request_obj, argv):
    csr_obj = certomat_crypto.set_csr(private_key_obj, subject_obj, hash_obj, backend_obj)
    req_txt = certomat_crypto.pem_encode_csr(csr_obj)
    
-   with open("private_key.pem", "w") as req:
+   with open(common_name + "_pk.der", "w") as req:
       req.write(private_key_txt)
 
-   with open("certomat.req", "wb") as req:
+   with open(common_name + "_req.der", "wb") as req:
       req.write(req_txt)
+	
+   with open("certomat.log", "a") as log:
+      log.write('Certomat ' + app_version + ' certificate requested for ' + common_name + ' ' + datetime.datetime.now().__str__() + '\n')
 
-
-   r = requests.put('localhost/certomat/api/v1.0/request', data = {'csr':req_txt})		
-
+   r = requests.put('localhost/certomat/api/v1.0/request', data = {'csr':req_txt})
 		
 		
 app_version = 'client.0014alpha'
@@ -101,8 +102,6 @@ request_obj = config(app_version, serial_number)
 config_obj = certomat_config.load(config_obj)
 backend_obj = set_backend(config_obj.data)
 
-with open("certomat.log", "a") as log:
-   log.write('Certomat ' + app_version + ' certificate generated ' + datetime.datetime.now().__str__() + '\n')
 
 if __name__ == "__main__":
    main(config_obj, request_obj, sys.argv[1:])
