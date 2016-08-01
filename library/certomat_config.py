@@ -124,7 +124,7 @@ def default(config_obj):
    config_obj.data['global_config']['root_certificate_format'] = 'der'
    config_obj.data['global_config']['fqdn'] = 'localhost'
    config_obj.data['global_config']['ip_address'] = '127.0.0.1'
-   config_obj.data['global_config']['database'] = 'ca_database.txt'
+   config_obj.data['global_config']['database'] = 'ca.db'
    config_obj.data['global_config']['port_number'] = 80
    config_obj.data['global_config']['auth_psk'] = None
    config_obj.data['certificate_config']['email_address'] = 'user@localhost'
