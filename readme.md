@@ -1,4 +1,5 @@
-Certomat is Certificate As a Service implementation written in Python.  Certomat is currently in an early stage of development, so only a minimum of features have been implemented.  Here is an overview of the current state of the project.
+Certomat is Certificate As a Service implementation written in Python.  Certomat is currently in an early stage of development, 
+  so only a minimum of features have been implemented.  Here is an overview of the current state of the project.
 
 -What Works-
 
@@ -15,7 +16,8 @@ Certomat is Certificate As a Service implementation written in Python.  Certomat
 
 -What Needs Work-
 
--The first API endpoint is not yet accepting CSR text which means that certificates have to be generated completely on the server side or loaded from files
+-The first API endpoint is not yet accepting CSR text which means that certificates have to be generated completely on the server 
+  side or loaded from files
 -Logging is very basic (startup and certificate issuing events are written to files)
 -Certomat server should be able to accept certificate requests by message queue
 -Certomat server should be able to accept certificate requests by file drop
