@@ -22,5 +22,4 @@ Certomat is Certificate As a Service implementation written in Python.  Certomat
 -Certomat client should be able to request certificates by message queue
 -Certomat client should be able to request certificates by file drop
 
-
-
+Icons made by http://www.flaticon.com/authors/freepik from http://www.flaticon.com and is licensed by Creative Commons 3.0 BY
