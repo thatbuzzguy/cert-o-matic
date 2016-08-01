@@ -13,7 +13,7 @@ import certomat_crypto
 
 class config():
    def __init__(self):
-      self.app_version = 'server.0014alpha'
+      self.app_version = 'olive-v.02'
       #self.serial_number = int
       self.self_signed = bool
       self.data = {}

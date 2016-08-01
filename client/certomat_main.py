@@ -95,7 +95,7 @@ def main(config_obj, request_obj, argv):
    r = requests.put('localhost/certomat/api/v1.0/request', data = {'csr':req_txt})
 		
 		
-app_version = 'client.0014alpha'
+app_version = 'olive-v.02'
 serial_number = certomat_crypto.set_serial_number()
 config_obj = config(app_version, serial_number)
 request_obj = config(app_version, serial_number)
