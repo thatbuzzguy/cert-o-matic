@@ -1,13 +1,13 @@
 certificate_config:
   algorithm_name: secp256r1
-  certificate_lifetime_in_days: 10
-  city_or_locality: West Sacramento
+  certificate_lifetime_in_days: 1
+  city_or_locality: Pullman
   country_name: US
-  email_address: ryan@real.com
+  email_address: user@localhost
   hash_name: sha512
-  organization: Home
-  organizational_unit: Fawkes Code International
-  state_or_province: CA
+  organization: Flying Circus
+  organizational_unit: Elephant Wrangler Union
+  state_or_province: WA
 global_config:
   algorithm_name: secp256r1
   auth_psk: null
@@ -17,12 +17,12 @@ global_config:
   common_name: certomatic test ca
   config_file: certomat.yaml
   country_name: US
-  database: ca_database.txt
+  database: ca.db
   email_address: root@localhost
   fqdn: localhost
   hash_name: sha512
   ip_address: 127.0.0.1
-  issuer_name: certomatic cross ca
+  issuer_name: certomatic test ca
   organization: Flying Circus
   organizational_unit: Elephant Wrangler Union
   port_number: 80
