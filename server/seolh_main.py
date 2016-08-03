@@ -13,7 +13,7 @@ import seolh_crypto
 
 class config():
    def __init__(self):
-      self.app_version = 'dev-1'
+      self.app_version = 'b.2'
       self.data = {}
       self.data['service_config'] = {}
       self.data['client_cert_config'] = {}

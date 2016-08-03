@@ -120,8 +120,8 @@ def default(config_obj):
    config_obj.data['service_config']['database'] = 'ca.db'
    config_obj.data['service_config']['port_number'] = 80
    config_obj.data['service_config']['auth_psk'] = None
-   config_obj.data['root_cert_config']['common_name'] = 'seolhic test ca'
-   config_obj.data['root_cert_config']['issuer_name'] = 'seolhic test ca'
+   config_obj.data['root_cert_config']['common_name'] = 'seolh test ca'
+   config_obj.data['root_cert_config']['issuer_name'] = 'seolh test ca'
    config_obj.data['root_cert_config']['subject_alternate_names'] = 'localhost'
    config_obj.data['root_cert_config']['email_address'] = 'root@localhost'
    config_obj.data['root_cert_config']['organization'] = 'Flying Circus'
