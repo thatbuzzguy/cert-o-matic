@@ -11,7 +11,7 @@ import random
 import string
 
 def set_hash_name(config_obj):
-   hash_name = config_obj.data['global_config']['hash_name']
+   hash_name = config_obj.data['root_cert_config']['hash_name']
    if hash_name == 'sha256':
        hash_obj = hashes.SHA256()
    elif hash_name == 'sha384':
@@ -25,7 +25,7 @@ def set_hash_name(config_obj):
    return hash_obj
 
 def set_private_key(config_obj, backend_obj):
-   algorithm_name = config_obj.data['global_config']['algorithm_name']
+   algorithm_name = config_obj.data['root_cert_config']['algorithm_name']
    if algorithm_name == 'secp256r1':
       private_key_obj = ec.generate_private_key(ec.SECP256R1, backend_obj)
    elif algorithm_name == 'secp384r1':
@@ -46,13 +46,13 @@ def set_public_key(private_key_obj):
 
 def set_subject_name(config_obj, common_name):
    subject_name_obj = x509.Name([
-      x509.NameAttribute(NameOID.COUNTRY_NAME, config_obj.data['global_config']['country_name']),
-      x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, config_obj.data['global_config']['state_or_province']),
-      x509.NameAttribute(NameOID.LOCALITY_NAME, config_obj.data['global_config']['city_or_locality']),
-      x509.NameAttribute(NameOID.ORGANIZATION_NAME, config_obj.data['global_config']['organization']),
-      x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME, config_obj.data['global_config']['organizational_unit']),
+      x509.NameAttribute(NameOID.COUNTRY_NAME, config_obj.data['root_cert_config']['country_name']),
+      x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, config_obj.data['root_cert_config']['state_or_province']),
+      x509.NameAttribute(NameOID.LOCALITY_NAME, config_obj.data['root_cert_config']['city_or_locality']),
+      x509.NameAttribute(NameOID.ORGANIZATION_NAME, config_obj.data['root_cert_config']['organization']),
+      x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME, config_obj.data['root_cert_config']['organizational_unit']),
       x509.NameAttribute(NameOID.COMMON_NAME, common_name),
-      x509.NameAttribute(NameOID.EMAIL_ADDRESS, config_obj.data['global_config']['email_address'])
+      x509.NameAttribute(NameOID.EMAIL_ADDRESS, config_obj.data['root_cert_config']['email_address'])
       ,])
    return subject_name_obj
 
@@ -68,7 +68,7 @@ def sign_cert(self_signed, private_key_obj, csr_obj, cert_lifetime_obj, hash_obj
    save_path = 'certificates\\'
    
    builder_obj = x509.CertificateBuilder()
-   builder_obj = builder_obj.issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, config_obj.data['global_config']['common_name'])]))
+   builder_obj = builder_obj.issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, config_obj.data['root_cert_config']['common_name'])]))
    builder_obj = builder_obj.not_valid_before(utcnow)
    builder_obj = builder_obj.not_valid_after(utcnow + cert_lifetime_obj)
    builder_obj = builder_obj.serial_number(serial_number_int)
@@ -83,7 +83,7 @@ def sign_cert(self_signed, private_key_obj, csr_obj, cert_lifetime_obj, hash_obj
    builder_obj = builder_obj.add_extension(x509.BasicConstraints(ca=self_signed, path_length=None), critical=True, )
    builder_obj = builder_obj.sign(private_key_obj, hash_obj, backend_obj)
    
-   with open(config_obj.data['global_config']['database'], "a") as database:
+   with open(config_obj.data['service_config']['database'], "a") as database:
        database.write(serial_number_str + ' ' + utcnow.strftime("%d/%m/%Y %H:%M:%S") + '\n')
 
    with open(save_path + serial_number_str + '.der', "ab") as current_certificate:
@@ -114,21 +114,21 @@ def set_random_string():
    return random_string
 
 def set_certificate_lifetime(config_obj):
-   certificate_lifetime_obj = datetime.timedelta(days=config_obj.data['global_config']['certificate_lifetime_in_days'])
+   certificate_lifetime_obj = datetime.timedelta(days=config_obj.data['root_cert_config']['certificate_lifetime_in_days'])
    return certificate_lifetime_obj
 
 def initalize(config_obj, backend_obj):
-   subject_obj = set_subject_name(config_obj, config_obj.data['global_config']['common_name'])
-   # issuer_name = config_obj.data['global_config']['issuer_name']
+   subject_obj = set_subject_name(config_obj, config_obj.data['root_cert_config']['common_name'])
+   # issuer_name = config_obj.data['root_cert_config']['issuer_name']
    private_key_obj = set_private_key(config_obj, backend_obj)
    hash_obj = set_hash_name(config_obj)
-   certificate_lifetime_obj = datetime.timedelta(days=config_obj.data['global_config']['certificate_lifetime_in_days'])
+   certificate_lifetime_obj = datetime.timedelta(days=config_obj.data['root_cert_config']['certificate_lifetime_in_days'])
 
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, backend_obj)
    root_cert_obj = sign_cert(True, private_key_obj, csr_obj, certificate_lifetime_obj, hash_obj, config_obj, backend_obj)
    with open("root_cert.der", "wb") as f:
        f.write(root_cert_obj.public_bytes(serialization.Encoding.DER))
-   with open(config_obj.data['global_config']['private_key_file'], "wb") as f:
+   with open(config_obj.data['service_config']['private_key_file'], "wb") as f:
        f.write(private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
    return
 
@@ -160,7 +160,7 @@ def save_request(backend_obj, config_obj):
    subject_obj = set_subject_name(config_obj, set_random_string())
    private_key_obj = set_private_key(config_obj.data, backend_obj)
    hash_obj = set_hash_name(config_obj)
-   certificate_lifetime_obj = datetime.timedelta(days=request_obj.data['global_config']['certificate_lifetime_in_days'])
+   certificate_lifetime_obj = datetime.timedelta(days=request_obj.data['root_cert_config']['certificate_lifetime_in_days'])
 
    csr_obj = set_csr(private_key_obj, subject_obj, hash_obj, config_obj.data, backend_obj)
    client_cert = sign_cert(False, private_key_obj, csr_obj, certificate_lifetime_obj, hash_obj, config_obj, backend_obj)

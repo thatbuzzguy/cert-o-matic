@@ -1,4 +1,4 @@
-certificate_config:
+client_cert_config:
   algorithm_name: secp256r1
   certificate_lifetime_in_days: 1
   city_or_locality: Pullman
@@ -8,21 +8,22 @@ certificate_config:
   organization: Flying Circus
   organizational_unit: Elephant Wrangler Union
   state_or_province: WA
-global_config:
+self_signed: true
+service_config:
   algorithm_name: secp256r1
   auth_psk: null
   backend: default_backend
   certificate_lifetime_in_days: 30
   city_or_locality: Pullman
-  common_name: certomatic test ca
-  config_file: certomat.yaml
+  common_name: seolhic test ca
+  config_file: seolh.yaml
   country_name: US
   database: ca.db
   email_address: root@localhost
   fqdn: localhost
   hash_name: sha512
   ip_address: 127.0.0.1
-  issuer_name: certomatic test ca
+  issuer_name: seolhic test ca
   organization: Flying Circus
   organizational_unit: Elephant Wrangler Union
   port_number: 80
@@ -33,4 +34,3 @@ global_config:
   root_certificate_format: der
   state_or_province: WA
   subject_alternate_names: localhost
-self_signed: true

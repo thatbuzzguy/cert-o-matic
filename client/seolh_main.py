@@ -23,12 +23,12 @@ import seolh_crypto
 class config():
    def __init__(self, app_version, serial_number):
       self.data = {}
-      self.data['global_config'] = {}
-      self.data['certificate_config'] = {}
-      self.data['global_config']['serial_number'] = serial_number
+      self.data['root_cert_config'] = {}
+      self.data['client_cert_config'] = {}
+      self.data['root_cert_config']['serial_number'] = serial_number
 
 def set_backend(config_data):
-   backend = config_data['global_config']['backend']
+   backend = config_data['root_cert_config']['backend']
    if backend == 'default_backend':
       backend_obj=default_backend()
    else:

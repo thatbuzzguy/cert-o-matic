@@ -13,12 +13,11 @@ import seolh_crypto
 
 class config():
    def __init__(self):
-      self.app_version = 'olive-v.02'
-      #self.serial_number = int
-      self.self_signed = bool
+      self.app_version = 'dev-1'
       self.data = {}
-      self.data['global_config'] = {}
-      self.data['certificate_config'] = {}
+      self.data['service_config'] = {}
+      self.data['client_cert_config'] = {}
+      self.data['root_cert_config'] = {}
 
 class request():
    def __init__(self):
@@ -27,7 +26,7 @@ class request():
       self.data = {}
 
 def set_backend(config_data):
-   backend = config_data['global_config']['backend']
+   backend = config_data['service_config']['backend']
    if backend == 'default_backend':
       backend_obj=default_backend()
    else:
@@ -43,8 +42,8 @@ request_obj = config()
 config_obj = seolh_config.load(config_obj)
 backend_obj = set_backend(config_obj.data)
 
-if file_exists(config_obj.data['global_config']['private_key_file']):
-   with open(config_obj.data['global_config']['private_key_file'], "rb") as key_file:
+if file_exists(config_obj.data['service_config']['private_key_file']):
+   with open(config_obj.data['service_config']['private_key_file'], "rb") as key_file:
       private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=backend_obj)
 else:
    seolh_crypto.initalize(config_obj, backend_obj)
@@ -143,5 +142,5 @@ def certificate(config_data, serial_number):
     return render_template('form_action.html', csr=csr)
 
 if __name__ == '__main__':
-   app.run(host=config_obj.data['global_config']['ip_address'], port=config_obj.data['global_config']['port_number'])
+   app.run(host=config_obj.data['service_config']['ip_address'], port=config_obj.data['service_config']['port_number'])
 
