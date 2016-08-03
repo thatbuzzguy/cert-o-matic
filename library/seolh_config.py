@@ -1,5 +1,5 @@
 import yaml
-import certomat_crypto
+import seolh_crypto
 
 def save(config_obj):
    temp_data = {
@@ -49,14 +49,14 @@ def save(config_obj):
    'hash_name' : config_obj.data['certificate_config']['hash_name'],
    'certificate_lifetime_in_days' : config_obj.data['certificate_config']['certificate_lifetime_in_days']}}
    
-   with open("certomat.yaml", "w") as stream:
+   with open("seolh.yaml", "w") as stream:
      stream.write(yaml.dump(temp_data, default_flow_style=False))
      
    return
 
 def load(config_obj):
    try:
-      with open("certomat.yaml", "r") as stream:
+      with open("seolh.yaml", "r") as stream:
          temp_data = yaml.load(stream)
 
       config_obj.data['self_signed'] = temp_data['self_signed']
@@ -101,12 +101,12 @@ def load(config_obj):
    return(config_obj)
 
 def default(config_obj):
-   config_obj.data['self_signed'] = certomat_crypto.set_serial_number()
+   config_obj.data['self_signed'] = seolh_crypto.set_serial_number()
    config_obj.data['self_signed'] = True
-   config_obj.data['global_config']['config_file'] = 'certomat.yaml'
+   config_obj.data['global_config']['config_file'] = 'seolh.yaml'
    config_obj.data['global_config']['backend'] = 'default_backend' 
-   config_obj.data['global_config']['common_name'] = 'certomatic test ca'
-   config_obj.data['global_config']['issuer_name'] = 'certomatic test ca'
+   config_obj.data['global_config']['common_name'] = 'seolhic test ca'
+   config_obj.data['global_config']['issuer_name'] = 'seolhic test ca'
    config_obj.data['global_config']['subject_alternate_names'] = 'localhost'
    config_obj.data['global_config']['email_address'] = 'root@localhost'
    config_obj.data['global_config']['organization'] = 'Flying Circus'

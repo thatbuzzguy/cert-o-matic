@@ -8,8 +8,8 @@ import sys
 
 sys.path.insert(0, sys.path[0]+'..\\..\\library')
 
-import certomat_config
-import certomat_crypto
+import seolh_config
+import seolh_crypto
 
 class config():
    def __init__(self):
@@ -40,17 +40,17 @@ def file_exists(file_name):
 
 config_obj = config()
 request_obj = config()
-config_obj = certomat_config.load(config_obj)
+config_obj = seolh_config.load(config_obj)
 backend_obj = set_backend(config_obj.data)
 
 if file_exists(config_obj.data['global_config']['private_key_file']):
    with open(config_obj.data['global_config']['private_key_file'], "rb") as key_file:
       private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=backend_obj)
 else:
-   certomat_crypto.initalize(config_obj, backend_obj)
+   seolh_crypto.initalize(config_obj, backend_obj)
 
-with open("certomat.log", "a") as log:
-   log.write('Certomat ' + config_obj.app_version + ' startup ' + datetime.datetime.now().__str__() + '\n')
+with open("seolh.log", "a") as log:
+   log.write('seolh ' + config_obj.app_version + ' startup ' + datetime.datetime.now().__str__() + '\n')
 
 app = Flask(__name__)
 
@@ -77,47 +77,47 @@ def version():
 
 @app.route('/initalize')
 def initalize():
-   certomat_crypto.initalize(config_obj, backend_obj)
+   seolh_crypto.initalize(config_obj, backend_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/config-save')
 def config_save():
-   certomat_config.save(config_obj)
+   seolh_config.save(config_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/config-load')
 def config_load():
-   certomat_config.load(config_obj)
+   seolh_config.load(config_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/config-default')
 def config_default():
-   certomat_config.default(config_obj)
+   seolh_config.default(config_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/generate-request')
 def generate_request():
-   req_text = certomat_crypto.generate_request(config_obj, backend_obj)
+   req_text = seolh_crypto.generate_request(config_obj, backend_obj)
    resp = Response(response=req_text, status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/process-request')
 def process_request():
-   cert_text = certomat_crypto.process_request(config_obj, backend_obj)
+   cert_text = seolh_crypto.process_request(config_obj, backend_obj)
    resp = Response(response=cert_text, status=200, mimetype="application/json")
    return(resp)
 
 @app.route('/save-request')
 def save_request():
-   cert_text = certomat_crypto.save_request(config_obj, backend_obj)
+   cert_text = seolh_crypto.save_request(config_obj, backend_obj)
    resp = Response(response=cert_text, status=200, mimetype="application/json")
    return(resp)
 
-@app.route('/certomat/api/v1.0/request', methods=['POST'])
+@app.route('/seolh/api/v1.0/request', methods=['POST'])
 def api_post_request():
    if not request.json or not 'csr' in request.json:
       abort(400)
