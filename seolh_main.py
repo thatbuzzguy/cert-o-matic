@@ -8,6 +8,7 @@ import sys
 
 import seolh_config
 import seolh_crypto
+import seolh_requests
 
 class config():
    def __init__(self):
@@ -21,7 +22,7 @@ class certificate_request():
    def __init__(self):
       self.serial_number = int
       self.self_signed = bool
-      self.data = {}
+      self.csr = str
 
 def set_backend(config_data):
    backend = config_data['service_config']['backend']
@@ -72,11 +73,11 @@ def help():
 @app.route('/version')
 def version():
    version = config_obj.app_version
-   return version 
+   return version
 
 @app.route('/initalize')
 def initalize():
-   seolh_crypto.initalize(config_obj, backend_obj)
+   seolh_requests.initalize(config_obj, backend_obj)
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
@@ -100,7 +101,7 @@ def config_default():
 
 @app.route('/generate-csr')
 def generate_csr():
-   csr_text = seolh_crypto.generate_request(config_obj, backend_obj)
+   csr_text = seolh_requests.generate_request(config_obj, backend_obj)
    resp = Response(response=csr_text, status=200, mimetype="application/json")
    return(resp)
 
@@ -110,12 +111,11 @@ def get_csr():
 
 @app.route('/process-csr', methods=['GET', 'POST'])
 def process_csr():
-   csr = request.form['csr']
-   #request_obj = certificate_request()
-   #cert_text = seolh_crypto.process_request(config_obj, backend_obj)
-   #resp = Response(response=cert_text, status=200, mimetype="application/json")
-   return render_template("cert_output.html", csr = csr)
+   request_obj = certificate_request()
+   request_obj.csr = request.form['csr']
+   cert_text = seolh_requests.process_request(request_obj, config_obj, backend_obj)
+   print(cert_text)
+   return(render_template("cert_output.html", certificate = cert_text))
 
 if __name__ == '__main__':
    app.run(host=config_obj.data['service_config']['ip_address'], port=config_obj.data['service_config']['port_number'])
-
