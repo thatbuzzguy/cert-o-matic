@@ -16,7 +16,7 @@ def initalize(config_obj, backend_obj):
 
    csr_obj = seolh_crypto.set_csr(private_key_obj, subject_obj, hash_obj, backend_obj)
    root_cert_obj = seolh_crypto.sign_cert(True, private_key_obj, csr_obj, certificate_lifetime_obj, hash_obj, config_obj, backend_obj)
-   with open("root_cert.der", "wb") as f:
+   with open(config_obj.data['service_config']['root_certificate_file_name'], "wb") as f:
        f.write(root_cert_obj.public_bytes(serialization.Encoding.DER))
    with open(config_obj.data['service_config']['private_key_file'], "wb") as f:
        f.write(private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))

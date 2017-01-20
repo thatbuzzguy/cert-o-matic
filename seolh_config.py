@@ -3,12 +3,12 @@ import seolh_crypto
 
 def save(config_obj):
    temp_data = {
-	
-   'self_signed' : True, 
-	
+
+   'self_signed' : True,
+
    'service_config' : {
    'config_file' : config_obj.data['service_config']['config_file'],
-   'backend' : config_obj.data['service_config']['backend'],  
+   'backend' : config_obj.data['service_config']['backend'],
 	'private_key_file' : config_obj.data['service_config']['private_key_file'],
    'private_key_format' : config_obj.data['service_config']['private_key_format'],
    'private_key_password' : config_obj.data['service_config']['private_key_password'],
@@ -50,10 +50,10 @@ def save(config_obj):
    'algorithm_name' : config_obj.data['client_cert_config']['algorithm_name'],
    'hash_name' : config_obj.data['client_cert_config']['hash_name'],
    'certificate_lifetime_in_days' : config_obj.data['client_cert_config']['certificate_lifetime_in_days']}}
-   
+
    with open("seolh.yaml", "w") as stream:
      stream.write(yaml.dump(temp_data, default_flow_style=False))
-     
+
    return
 
 def load(config_obj):
@@ -62,8 +62,8 @@ def load(config_obj):
          temp_data = yaml.load(stream)
 
       config_obj.data['self_signed'] = temp_data['self_signed']
-		
-		
+
+
       config_obj.data['service_config']['config_file'] = temp_data['service_config']['config_file']
       config_obj.data['service_config']['backend'] = temp_data['service_config']['backend']
       config_obj.data['service_config']['private_key_file'] = temp_data['service_config']['private_key_file']
@@ -75,7 +75,7 @@ def load(config_obj):
       config_obj.data['service_config']['ip_address'] = temp_data['service_config']['ip_address']
       config_obj.data['service_config']['database'] = temp_data['service_config']['database']
       config_obj.data['service_config']['port_number'] = temp_data['service_config']['port_number']
-      config_obj.data['service_config']['auth_psk'] = temp_data['service_config']['auth_psk']		
+      config_obj.data['service_config']['auth_psk'] = temp_data['service_config']['auth_psk']
       config_obj.data['root_cert_config']['common_name'] = temp_data['root_cert_config']['common_name']
       config_obj.data['root_cert_config']['issuer_name'] = temp_data['root_cert_config']['issuer_name']
       config_obj.data['root_cert_config']['subject_alternate_names'] = temp_data['root_cert_config']['subject_alternate_names']
@@ -107,17 +107,17 @@ def load(config_obj):
 def default(config_obj):
    config_obj.data['self_signed'] = seolh_crypto.set_serial_number()
    config_obj.data['self_signed'] = True
-	
+
    config_obj.data['service_config']['config_file'] = 'seolh.yaml'
-   config_obj.data['service_config']['backend'] = 'default_backend' 
-   config_obj.data['service_config']['private_key_file'] = 'root_private_key.der'
+   config_obj.data['service_config']['backend'] = 'default_backend'
+   config_obj.data['service_config']['private_key_file'] = 'ca/root_private_key.der'
    config_obj.data['service_config']['private_key_format'] = 'der'
    config_obj.data['service_config']['private_key_password'] = None
-   config_obj.data['service_config']['root_certificate_file_name'] = 'root_cert.der'
+   config_obj.data['service_config']['root_certificate_file_name'] = 'ca/root_cert.der'
    config_obj.data['service_config']['root_certificate_format'] = 'der'
    config_obj.data['service_config']['fqdn'] = 'localhost'
    config_obj.data['service_config']['ip_address'] = '127.0.0.1'
-   config_obj.data['service_config']['database'] = 'ca.db'
+   config_obj.data['service_config']['database'] = 'ca/ca.db'
    config_obj.data['service_config']['port_number'] = 80
    config_obj.data['service_config']['auth_psk'] = None
    config_obj.data['root_cert_config']['common_name'] = 'seolh test ca'
@@ -142,5 +142,3 @@ def default(config_obj):
    config_obj.data['client_cert_config']['hash_name'] = 'sha512'
    config_obj.data['client_cert_config']['certificate_lifetime_in_days'] = 1
    return config_obj
-
-

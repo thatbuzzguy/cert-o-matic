@@ -18,7 +18,7 @@ service_config:
   common_name: seolh test ca
   config_file: seolh.yaml
   country_name: US
-  database: ca.db
+  database: ca/ca.db
   email_address: root@localhost
   fqdn: localhost
   hash_name: sha512
@@ -27,10 +27,10 @@ service_config:
   organization: Flying Circus
   organizational_unit: Elephant Wrangler Union
   port_number: 80
-  private_key_file: root_private_key.der
+  private_key_file: ca/root_private_key.der
   private_key_format: der
   private_key_password: null
-  root_certificate_file_name: root_cert.der
+  root_certificate_file_name: ca/root_cert.der
   root_certificate_format: der
   state_or_province: WA
   subject_alternate_names: localhost

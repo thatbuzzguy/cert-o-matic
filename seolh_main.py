@@ -35,6 +35,9 @@ def set_backend(config_data):
 if not os.path.exists("certificates"):
     os.makedirs("certificates")
 
+if not os.path.exists("ca"):
+    os.makedirs("ca")
+
 def file_exists(file_name):
    exists = os.path.isfile(file_name)
    return exists
@@ -47,9 +50,9 @@ if file_exists(config_obj.data['service_config']['private_key_file']):
    with open(config_obj.data['service_config']['private_key_file'], "rb") as key_file:
       private_key_obj = serialization.load_pem_private_key(key_file.read(), password=None, backend=backend_obj)
 else:
-   seolh_crypto.initalize(config_obj, backend_obj)
+   seolh_requests.initalize(config_obj, backend_obj)
 
-with open("seolh.log", "a") as log:
+with open("ca/seolh.log", "a") as log:
    log.write('seolh ' + config_obj.app_version + ' startup ' + datetime.datetime.now().__str__() + '\n')
 
 app = Flask(__name__)
