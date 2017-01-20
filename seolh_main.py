@@ -31,6 +31,9 @@ def set_backend(config_data):
       backend_obj=default_backend()
    return backend_obj
 
+if not os.path.exists("certificates"):
+    os.makedirs("certificates")
+
 def file_exists(file_name):
    exists = os.path.isfile(file_name)
    return exists
