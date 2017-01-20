@@ -8,7 +8,7 @@
                 <h1>CSR Input</h1>
             </div>
             <div id="content">
-                <form method="post" action="{{ url_for('certificate') }}">
+                <form method="post" action="{{ url_for('process_csr') }}">
                   <label for="yourname">Please enter your CSR:</label><br>
                   <textarea rows="20" cols="80" name=csr></textarea><br>
                   <input type="submit" />

@@ -62,7 +62,7 @@ def help():
    resp = Response(response='<html><a href=\"/version\">version</a><p>' + \
    '<a href=\"/initalize\">initalize</a><p>' + \
    '<a href=\"/generate-csr\">generate-csr</a><p>' + \
-   '<a href=\"/process-csr\">get-csr</a><p>' + \
+   '<a href=\"/get-csr\">get-csr</a><p>' + \
    '<a href=\"/config-save\">config-save</a><p>' + \
    '<a href=\"/config-load\">config-load</a><p>' + \
    '<a href=\"/config-default\">config-default</a>' \
