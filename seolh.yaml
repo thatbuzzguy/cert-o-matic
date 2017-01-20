@@ -15,7 +15,7 @@ service_config:
   backend: default_backend
   certificate_lifetime_in_days: 30
   city_or_locality: Pullman
-  common_name: seolhic test ca
+  common_name: seolh test ca
   config_file: seolh.yaml
   country_name: US
   database: ca.db
@@ -23,7 +23,7 @@ service_config:
   fqdn: localhost
   hash_name: sha512
   ip_address: 127.0.0.1
-  issuer_name: seolhic test ca
+  issuer_name: seolh test ca
   organization: Flying Circus
   organizational_unit: Elephant Wrangler Union
   port_number: 80

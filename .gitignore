@@ -1,0 +1,5 @@
+*.der
+certificates/*
+ca.db
+__pycache__/*
+*.log

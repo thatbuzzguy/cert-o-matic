@@ -96,43 +96,21 @@ def config_default():
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
-@app.route('/generate-request')
-def generate_request():
-   req_text = seolh_crypto.generate_request(config_obj, backend_obj)
-   resp = Response(response=req_text, status=200, mimetype="application/json")
+@app.route('/generate-csr')
+def generate_csr():
+   csr_text = seolh_crypto.generate_request(config_obj, backend_obj)
+   resp = Response(response=csr_text, status=200, mimetype="application/json")
    return(resp)
+
+@app.route('/get-csr')
+def get_csr():
+   return render_template("csr_input.html")
 
 @app.route('/process-request')
 def process_request():
    cert_text = seolh_crypto.process_request(config_obj, backend_obj)
    resp = Response(response=cert_text, status=200, mimetype="application/json")
-   return(resp)
-
-@app.route('/save-request')
-def save_request():
-   cert_text = seolh_crypto.save_request(config_obj, backend_obj)
-   resp = Response(response=cert_text, status=200, mimetype="application/json")
-   return(resp)
-
-@app.route('/seolh/api/v1.0/request', methods=['POST'])
-def api_post_request():
-   if not request.json or not 'csr' in request.json:
-      abort(400)
-   
-   request = {
-      'csr': request.json['csr']
-   }
-
-   
-
-   return
-
-# jsonify({'tasks': tasks})
-
-
-@app.route('/csr')
-def csr():
-    return render_template('form_submit.html')
+   return render_template("csr_input.html")
 
 @app.route('/certificate', methods=['POST'])
 def certificate(config_data, serial_number):
