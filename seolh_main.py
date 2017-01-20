@@ -6,8 +6,6 @@ import os.path
 import datetime
 import sys
 
-sys.path.insert(0, sys.path[0]+'..\\..\\library')
-
 import seolh_config
 import seolh_crypto
 
