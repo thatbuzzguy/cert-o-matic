@@ -17,7 +17,7 @@ class config():
       self.data['client_cert_config'] = {}
       self.data['root_cert_config'] = {}
 
-class request():
+class certificate_request():
    def __init__(self):
       self.serial_number = int
       self.self_signed = bool
@@ -36,7 +36,6 @@ def file_exists(file_name):
    return exists
 
 config_obj = config()
-request_obj = config()
 config_obj = seolh_config.load(config_obj)
 backend_obj = set_backend(config_obj.data)
 
@@ -59,8 +58,8 @@ def root():
 def help():
    resp = Response(response='<html><a href=\"/version\">version</a><p>' + \
    '<a href=\"/initalize\">initalize</a><p>' + \
-   '<a href=\"/generate-request\">generate-request</a><p>' + \
-   '<a href=\"/process-request\">process-request</a><p>' + \
+   '<a href=\"/generate-csr\">generate-csr</a><p>' + \
+   '<a href=\"/process-csr\">get-csr</a><p>' + \
    '<a href=\"/config-save\">config-save</a><p>' + \
    '<a href=\"/config-load\">config-load</a><p>' + \
    '<a href=\"/config-default\">config-default</a>' \
@@ -106,16 +105,13 @@ def generate_csr():
 def get_csr():
    return render_template("csr_input.html")
 
-@app.route('/process-request')
-def process_request():
-   cert_text = seolh_crypto.process_request(config_obj, backend_obj)
-   resp = Response(response=cert_text, status=200, mimetype="application/json")
-   return render_template("csr_input.html")
-
-@app.route('/certificate', methods=['POST'])
-def certificate(config_data, serial_number):
-    csr=request.form['csr']
-    return render_template('form_action.html', csr=csr)
+@app.route('/process-csr', methods=['GET', 'POST'])
+def process_csr():
+   csr = request.form['csr']
+   #request_obj = certificate_request()
+   #cert_text = seolh_crypto.process_request(config_obj, backend_obj)
+   #resp = Response(response=cert_text, status=200, mimetype="application/json")
+   return render_template("cert_output.html", csr = csr)
 
 if __name__ == '__main__':
    app.run(host=config_obj.data['service_config']['ip_address'], port=config_obj.data['service_config']['port_number'])
