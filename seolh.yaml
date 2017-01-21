@@ -18,7 +18,7 @@ service_config:
   common_name: seolh test ca
   config_file: seolh.yaml
   country_name: US
-  database: ca/ca.db
+  database: ca/ca.log
   email_address: root@localhost
   fqdn: localhost
   hash_name: sha512

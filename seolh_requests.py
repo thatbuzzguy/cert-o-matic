@@ -32,8 +32,7 @@ def generate_random_csr(config_obj, backend_obj):
    return csr_txt
 
 def process_csr(csr_text, config_obj, backend_obj):
-   csr_txt = str.encode(csr_txt)
-   csr_obj = seolh_crypto.pem_decode_csr(csr_text, backend_obj)
+   csr_obj = seolh_crypto.pem_decode_csr(str.encode(csr_text), backend_obj)
    private_key_obj = seolh_crypto.set_private_key(config_obj, backend_obj)
    hash_obj = seolh_crypto.set_hash_name(config_obj)
    certificate_lifetime_obj = seolh_crypto.set_certificate_lifetime(config_obj)
