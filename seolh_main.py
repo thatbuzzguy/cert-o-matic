@@ -12,7 +12,7 @@ import seolh_requests
 
 class config():
    def __init__(self):
-      self.app_version = 'b.2'
+      self.app_version = 'b3'
       self.data = {}
       self.data['service_config'] = {}
       self.data['client_cert_config'] = {}
@@ -65,7 +65,7 @@ def root():
 def help():
    resp = Response(response='<html><a href=\"/version\">version</a><p>' + \
    '<a href=\"/initalize\">initalize</a><p>' + \
-   '<a href=\"/generate-csr\">generate-csr</a><p>' + \
+   '<a href=\"/generate-random-csr\">generate-random-csr</a><p>' + \
    '<a href=\"/get-csr\">get-csr</a><p>' + \
    '<a href=\"/config-save\">config-save</a><p>' + \
    '<a href=\"/config-load\">config-load</a><p>' + \
@@ -102,7 +102,7 @@ def config_default():
    resp = Response(response='ok', status=200, mimetype="application/json")
    return(resp)
 
-@app.route('/generate-csr')
+@app.route('/generate-random-csr')
 def generate_csr():
    csr_text = seolh_requests.generate_request(config_obj, backend_obj)
    resp = Response(response=csr_text, status=200, mimetype="application/json")
@@ -114,10 +114,10 @@ def get_csr():
 
 @app.route('/process-csr', methods=['GET', 'POST'])
 def process_csr():
-   request_obj = certificate_request()
-   request_obj.csr = request.form['csr']
-   cert_text = seolh_requests.process_request(request_obj, config_obj, backend_obj)
-   print(cert_text)
+   #request_obj = certificate_request()
+   #request_obj.csr = request.form['csr']
+   csr_text = request.form['csr']
+   cert_text = seolh_requests.process_request(csr_text, config_obj, backend_obj)
    return(render_template("cert_output.html", certificate = cert_text))
 
 if __name__ == '__main__':

@@ -32,18 +32,18 @@ def generate_request(config_obj, backend_obj):
    cert_txt = csr_obj.public_bytes(serialization.Encoding.PEM)
    return cert_txt
 
-def process_request(request_obj, config_obj, backend_obj):
-   subject_obj = seolh_crypto.set_subject_name(config_obj, seolh_crypto.set_random_string())
+def process_request(csr_text, config_obj, backend_obj):
+   csr_obj = seolh_crypto.pem_decode_csr(str.encode(csr_text), backend_obj)
+
    private_key_obj = seolh_crypto.set_private_key(config_obj, backend_obj)
    hash_obj = seolh_crypto.set_hash_name(config_obj)
    certificate_lifetime_obj = seolh_crypto.set_certificate_lifetime(config_obj)
-
-   csr_obj = seolh_crypto.set_csr(private_key_obj, subject_obj, hash_obj, backend_obj)
    client_cert = seolh_crypto.sign_cert(False, private_key_obj, csr_obj, certificate_lifetime_obj, hash_obj, config_obj, backend_obj)
 
    cert_txt = client_cert.public_bytes(serialization.Encoding.PEM).decode(encoding="utf-8", errors="strict")\
       + private_key_obj.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, \
       encryption_algorithm=serialization.NoEncryption()).decode(encoding="utf-8", errors="strict")
+
    return cert_txt
 
 def save_request(backend_obj, config_obj):

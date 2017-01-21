@@ -66,7 +66,7 @@ def sign_cert(self_signed, private_key_obj, csr_obj, cert_lifetime_obj, hash_obj
    serial_number_str = hex(serial_number_int)[2:]
 
    save_path = 'certificates\\'
-   
+
    builder_obj = x509.CertificateBuilder()
    builder_obj = builder_obj.issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, config_obj.data['root_cert_config']['common_name'])]))
    builder_obj = builder_obj.not_valid_before(utcnow)
@@ -82,7 +82,7 @@ def sign_cert(self_signed, private_key_obj, csr_obj, cert_lifetime_obj, hash_obj
    builder_obj = builder_obj.subject_name(csr_obj.subject)
    builder_obj = builder_obj.add_extension(x509.BasicConstraints(ca=self_signed, path_length=None), critical=True, )
    builder_obj = builder_obj.sign(private_key_obj, hash_obj, backend_obj)
-   
+
    with open(config_obj.data['service_config']['database'], "a") as database:
        database.write(serial_number_str + ' ' + utcnow.strftime("%d/%m/%Y %H:%M:%S") + '\n')
 
@@ -107,14 +107,18 @@ def pem_encode_csr(csr):
 
 def set_serial_number():
    serial_number = int(uuid.uuid4())
-   return serial_number
+   return(serial_number)
 
 def set_random_string():
    random_string = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(15))
-   return random_string
+   return(random_string)
 
 def set_certificate_lifetime(config_obj):
    certificate_lifetime_obj = datetime.timedelta(days=config_obj.data['root_cert_config']['certificate_lifetime_in_days'])
-   return certificate_lifetime_obj
+   return(certificate_lifetime_obj)
 
-
+def pem_decode_csr(csr_text, backend_obj):
+    csr_obj = x509.load_pem_x509_csr(csr_text, backend_obj)
+    #if isinstance(certificate, x509.Certificate):
+    print("csr imported")
+    return(csr_obj)
