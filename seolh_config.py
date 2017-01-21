@@ -117,7 +117,7 @@ def default(config_obj):
    config_obj.data['service_config']['root_certificate_format'] = 'der'
    config_obj.data['service_config']['fqdn'] = 'localhost'
    config_obj.data['service_config']['ip_address'] = '127.0.0.1'
-   config_obj.data['service_config']['database'] = 'ca/ca.db'
+   config_obj.data['service_config']['database'] = 'ca/ca.log'
    config_obj.data['service_config']['port_number'] = 80
    config_obj.data['service_config']['auth_psk'] = None
    config_obj.data['root_cert_config']['common_name'] = 'seolh test ca'

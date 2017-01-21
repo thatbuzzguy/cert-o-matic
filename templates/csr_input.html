@@ -1,19 +1,9 @@
 <html>
-    <head>
-        <title>CSR Input</title>
-    </head>
     <body>
-        <div id="container">
-            <div class="title">
-                <h1>CSR Input</h1>
-            </div>
-            <div id="content">
-                <form method="post" action="{{url_for('process_csr')}}">
-                  <label for="yourname">Please enter your CSR:</label><br>
-                  <textarea rows="20" cols="80" name=csr></textarea><br>
-                  <input type="submit" />
-                </form>
-            </div>
-        </div>
+       CSR Input
+       <form method="post" action="{{url_for('process_csr')}}">
+          <textarea rows="20" cols="80" name=csr></textarea><br>
+          <input type="submit" />
+       </form>
     </body>
 </html>

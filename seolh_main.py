@@ -103,8 +103,8 @@ def config_default():
    return(resp)
 
 @app.route('/generate-random-csr')
-def generate_csr():
-   csr_text = seolh_requests.generate_request(config_obj, backend_obj)
+def generate_random_csr():
+   csr_text = seolh_requests.generate_random_csr(config_obj, backend_obj)
    resp = Response(response=csr_text, status=200, mimetype="application/json")
    return(resp)
 
@@ -114,11 +114,9 @@ def get_csr():
 
 @app.route('/process-csr', methods=['GET', 'POST'])
 def process_csr():
-   #request_obj = certificate_request()
-   #request_obj.csr = request.form['csr']
    csr_text = request.form['csr']
-   cert_text = seolh_requests.process_request(csr_text, config_obj, backend_obj)
-   return(render_template("cert_output.html", certificate = cert_text))
+   resp = seolh_requests.process_csr(csr_text, config_obj, backend_obj)
+   return(resp)
 
 if __name__ == '__main__':
    app.run(host=config_obj.data['service_config']['ip_address'], port=config_obj.data['service_config']['port_number'])
